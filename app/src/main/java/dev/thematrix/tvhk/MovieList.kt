@@ -30,7 +30,8 @@ object MovieList {
             "NOW 332 新聞台",
             "NOW 331 直播台",
             "港台電視 31",
-            "港台電視 32"
+            "港台電視 32",
+            "有線新聞台"
         )
 
         val cardImageUrl = arrayOf(
@@ -38,7 +39,8 @@ object MovieList {
             "https://news.now.com/revamp2014/images/logo.png",
             "https://news.now.com/revamp2014/images/logo.png",
             "https://www.rthk.hk/assets/rthk/images/tv/player/500x281.jpg",
-            "https://www.rthk.hk/assets/rthk/images/tv/player/500x281.jpg"
+            "https://www.rthk.hk/assets/rthk/images/tv/player/500x281.jpg",
+            "https://vignette.wikia.nocookie.net/evchk/images/f/f8/Cablelogo.gif/revision/latest"
         )
 
         val videoUrl = arrayOf(
@@ -46,7 +48,8 @@ object MovieList {
             "",
             "",
             "https://www.rthk.hk/feeds/dtt/rthktv31_https.m3u8",
-            "https://www.rthk.hk/feeds/dtt/rthktv32_https.m3u8"
+            "https://www.rthk.hk/feeds/dtt/rthktv32_https.m3u8",
+            ""
         )
 
         val func = arrayOf(
@@ -54,7 +57,8 @@ object MovieList {
             "nowtv332",
             "nowtv331",
             "",
-            ""
+            "",
+            "cabletv"
         )
 
         val list = title.indices.map {

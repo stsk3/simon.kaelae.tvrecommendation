@@ -13,6 +13,7 @@ import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import org.json.JSONObject
@@ -97,6 +98,54 @@ class PlaybackVideoFragment : VideoSupportFragment() {
 
             val requestQueue = Volley.newRequestQueue(activity)
             requestQueue.add(jsonObjectRequest)
+        }else if(ch.equals("cabletv")){
+            val stringRequest = object: StringRequest(
+                Method.POST,
+                "https://mobileapp.i-cable.com/iCableMobile/API/api.php",
+                Response.Listener { response ->
+                    val video_url = JSONObject(JSONObject(response).get("result").toString()).get("stream").toString()
+                    Log.d("adaptive", video_url)
+                    playVideo(title, video_url)
+                },
+                Response.ErrorListener{
+                }
+            ){
+                override fun getHeaders(): MutableMap<String, String> {
+                    val params =  mutableMapOf<String, String>()
+
+                    params.put("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 6.0.1; F8132 Build/35.0.A.1.282)")
+
+                    return params
+                }
+
+                override fun getParams(): MutableMap<String, String> {
+                    val params =  mutableMapOf<String, String>()
+
+                    params.put("device", "aos_mobile")
+                    params.put("channel_no", "_9")
+                    params.put("method", "streamingGenerator2")
+                    params.put("quality", "m")
+                    params.put("uuid", "")
+                    params.put("vlink", "_9")
+                    params.put("is_premium", "0")
+                    params.put("network", "wifi")
+                    params.put("platform", "1")
+                    params.put("deviceToken", "")
+                    params.put("appVersion", "6.3.4")
+                    params.put("market", "G")
+                    params.put("lang", "zh_TW")
+                    params.put("version", "6.3.4")
+                    params.put("osVersion", "23")
+                    params.put("channel_id", "106")
+                    params.put("deviceModel", "AndroidTV")
+                    params.put("type", "live")
+
+                    return params
+                }
+            }
+
+            val requestQueue = Volley.newRequestQueue(activity)
+            requestQueue.add(stringRequest)
         }
     }
 }

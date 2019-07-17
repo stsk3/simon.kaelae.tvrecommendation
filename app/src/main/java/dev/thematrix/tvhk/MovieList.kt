@@ -26,55 +26,43 @@ object MovieList {
 
     private fun setupMovies(): List<Movie> {
         val title = arrayOf(
-            "港台電視 RTHK-TV 31",
-            "港台電視 RTHK-TV 32",
-            "Introducing Gmail Blue",
-            "Introducing Google Fiber to the Pole",
-            "Introducing Google Nose"
+            "ViuTV 99台",
+            "NOW 332 新聞台",
+            "NOW 331 直播台",
+            "港台電視 31",
+            "港台電視 32"
         )
 
-        val description = "Description"
-
-        val studio = arrayOf(
-            "RTHK",
-            "RTHK",
-            "Studio Two",
-            "Studio Three",
-            "Studio Four"
+        val cardImageUrl = arrayOf(
+            "https://static.viu.tv/public/images/amsUpload/201701/1484127151250_ChannelLogo99.jpg",
+            "https://news.now.com/revamp2014/images/logo.png",
+            "https://news.now.com/revamp2014/images/logo.png",
+            "https://www.rthk.hk/assets/rthk/images/tv/player/500x281.jpg",
+            "https://www.rthk.hk/assets/rthk/images/tv/player/500x281.jpg"
         )
 
         val videoUrl = arrayOf(
+            "",
+            "",
+            "",
             "https://www.rthk.hk/feeds/dtt/rthktv31_https.m3u8",
-            "https://www.rthk.hk/feeds/dtt/rthktv32_https.m3u8",
-            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Gmail%20Blue.mp4",
-            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Fiber%20to%20the%20Pole.mp4",
-            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Nose.mp4"
+            "https://www.rthk.hk/feeds/dtt/rthktv32_https.m3u8"
         )
 
-//        val bgImageUrl = arrayOf(
-//            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/Zeitgeist/Zeitgeist%202010_%20Year%20in%20Review/bg.jpg",
-//            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search/bg.jpg",
-//            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Gmail%20Blue/bg.jpg",
-//            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Fiber%20to%20the%20Pole/bg.jpg",
-//            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Nose/bg.jpg"
-//        )
-
-        val cardImageUrl = arrayOf(
-            "https://www.rthk.hk/assets/rthk/images/tv/player/500x281.jpg",
-            "https://www.rthk.hk/assets/rthk/images/tv/player/500x281.jpg",
-            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Gmail%20Blue/card.jpg",
-            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Fiber%20to%20the%20Pole/card.jpg",
-            "http://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Nose/card.jpg"
+        val func = arrayOf(
+            "viutv99",
+            "nowtv332",
+            "nowtv331",
+            "",
+            ""
         )
 
         val list = title.indices.map {
             buildMovieInfo(
                 title[it],
-                description,
-                studio[it],
+                cardImageUrl[it],
                 videoUrl[it],
-                cardImageUrl[it]
-//                bgImageUrl[it]
+                func[it]
             )
         }
 
@@ -83,20 +71,17 @@ object MovieList {
 
     private fun buildMovieInfo(
         title: String,
-        description: String,
-        studio: String,
+        cardImageUrl: String,
         videoUrl: String,
-        cardImageUrl: String
-//        backgroundImageUrl: String
+        func: String
     ): Movie {
         val movie = Movie()
         movie.id = count++
         movie.title = title
-        movie.description = description
-        movie.studio = studio
         movie.cardImageUrl = cardImageUrl
-//        movie.backgroundImageUrl = backgroundImageUrl
         movie.videoUrl = videoUrl
+        movie.func = func
+
         return movie
     }
 }

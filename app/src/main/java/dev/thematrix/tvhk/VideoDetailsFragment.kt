@@ -63,40 +63,8 @@ class VideoDetailsFragment : DetailsFragment() {
         Log.d(TAG, "onCreate DetailsFragment")
         super.onCreate(savedInstanceState)
 
-        mDetailsBackground = DetailsFragmentBackgroundController(this)
-
-        mSelectedMovie = activity.intent.getSerializableExtra(DetailsActivity.MOVIE) as Movie
-        if (mSelectedMovie != null) {
-            mPresenterSelector = ClassPresenterSelector()
-            mAdapter = ArrayObjectAdapter(mPresenterSelector)
-            setupDetailsOverviewRow()
-            setupDetailsOverviewRowPresenter()
-            setupRelatedMovieListRow()
-            adapter = mAdapter
-            initializeBackground(mSelectedMovie)
-            onItemViewClickedListener = ItemViewClickedListener()
-        } else {
-            val intent = Intent(activity, MainActivity::class.java)
-            startActivity(intent)
-        }
-    }
-
-    private fun initializeBackground(movie: Movie?) {
-        mDetailsBackground.enableParallax()
-        Glide.with(activity)
-            .load(movie?.backgroundImageUrl)
-            .asBitmap()
-            .centerCrop()
-            .error(R.drawable.default_background)
-            .into<SimpleTarget<Bitmap>>(object : SimpleTarget<Bitmap>() {
-                override fun onResourceReady(
-                    bitmap: Bitmap,
-                    glideAnimation: GlideAnimation<in Bitmap>
-                ) {
-                    mDetailsBackground.coverBitmap = bitmap
-                    mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size())
-                }
-            })
+        val intent = Intent(activity, MainActivity::class.java)
+        startActivity(intent)
     }
 
     private fun setupDetailsOverviewRow() {

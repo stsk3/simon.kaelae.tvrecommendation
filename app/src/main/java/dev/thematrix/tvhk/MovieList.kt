@@ -1,17 +1,3 @@
-/*
- * Copyright (C) 2017 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- */
-
 package dev.thematrix.tvhk
 
 object MovieList {
@@ -26,39 +12,39 @@ object MovieList {
 
     private fun setupMovies(): List<Movie> {
         val title = arrayOf(
-            "ViuTV 99台",
-            "NOW 332 新聞台",
-            "NOW 331 直播台",
+            "ViuTV",
+            "now 新聞台",
+            "now 直播台",
+            "有線新聞台",
             "港台電視 31",
-            "港台電視 32",
-            "有線新聞台"
+            "港台電視 32"
         )
 
         val cardImageUrl = arrayOf(
             "https://static.viu.tv/public/images/amsUpload/201701/1484127151250_ChannelLogo99.jpg",
-            "https://news.now.com/revamp2014/images/logo.png",
-            "https://news.now.com/revamp2014/images/logo.png",
-            "https://www.rthk.hk/assets/rthk/images/tv/player/500x281.jpg",
-            "https://www.rthk.hk/assets/rthk/images/tv/player/500x281.jpg",
-            "https://vignette.wikia.nocookie.net/evchk/images/f/f8/Cablelogo.gif/revision/latest"
+            "http://www.nettv.live/uploads/18/1-1PG11QQ2114.jpg",
+            "http://www.nettv.live/uploads/18/1-1PG11I415a1.jpg",
+            "https://upload.wikimedia.org/wikipedia/zh/4/40/Cable_News_Channel.png",
+            "http://rthk.hk/about/dtt/images/logo_tv31.jpg",
+            "http://rthk.hk/about/dtt/images/logo_tv32.jpg"
         )
 
         val videoUrl = arrayOf(
             "",
             "",
             "",
+            "",
             "https://www.rthk.hk/feeds/dtt/rthktv31_https.m3u8",
-            "https://www.rthk.hk/feeds/dtt/rthktv32_https.m3u8",
-            ""
+            "https://www.rthk.hk/feeds/dtt/rthktv32_https.m3u8"
         )
 
         val func = arrayOf(
             "viutv99",
             "nowtv332",
             "nowtv331",
+            "cabletv",
             "",
-            "",
-            "cabletv"
+            ""
         )
 
         val list = title.indices.map {

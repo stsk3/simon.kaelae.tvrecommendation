@@ -1,11 +1,8 @@
 package dev.thematrix.tvhk
 
 import android.net.Uri
-import android.nfc.Tag
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
-import android.view.View
 import android.widget.Toast
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
@@ -14,22 +11,20 @@ import androidx.leanback.media.PlaybackTransportControlGlue
 import androidx.leanback.widget.PlaybackControlsRow
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
+import com.android.volley.toolbox.*
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 
 class PlaybackVideoFragment : VideoSupportFragment() {
-    lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("DEBUG", "FRAGMENT")
-
         val (id, title, _, videoUrl, func) = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
+
+        setUpPlayer()
 
         prepareVideo(id, title, videoUrl, func)
     }
@@ -37,6 +32,20 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     override fun onPause() {
         super.onPause()
         mTransportControlGlue.pause()
+    }
+
+    private fun setUpPlayer(){
+        playerAdapter = MediaPlayerAdapter(activity)
+        playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE)
+        mTransportControlGlue = PlaybackTransportControlGlue(activity, playerAdapter)
+
+        val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
+        mTransportControlGlue.host = glueHost
+
+        mTransportControlGlue.isControlsOverlayAutoHideEnabled = false
+        hideControlsOverlay(false)
+        mTransportControlGlue.isSeekEnabled = false
+        mTransportControlGlue.playWhenPrepared()
     }
 
     fun onKeyDown(keyCode: Int): Boolean{
@@ -50,24 +59,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             keyCode == KeyEvent.KEYCODE_NAVIGATE_PREVIOUS ||
             keyCode == KeyEvent.KEYCODE_SYSTEM_NAVIGATION_LEFT
         ){
-            Log.d("DEBUG", "PREVIOUS")
-            val list = MovieList.list
-
-            Log.d("DEBUG", "GET currentVideoID: " + currentVideoID.toString())
-
-            var videoId = currentVideoID - 1
-
-            Log.d("DEBUG", "PENDING_VIDEO_ID: " + videoId.toString())
-
-            if(videoId < 0){
-                videoId = list.count() - 1
-            }
-
-            Log.d("DEBUG", "PENDING_VIDEO_ID: " + videoId.toString())
-
-            val item = list[videoId]
-
-            prepareVideo(item.id, item.title, item.videoUrl, item.func)
+            channelSwitch("PREVIOUS")
         }else if(
             keyCode == KeyEvent.KEYCODE_DPAD_DOWN ||
             keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ||
@@ -78,7 +70,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             keyCode == KeyEvent.KEYCODE_NAVIGATE_NEXT ||
             keyCode == KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT
         ){
-            Log.d("DEBUG", "NEXT")
+            channelSwitch("NEXT")
         }else{
             return false
         }
@@ -86,12 +78,28 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         return true
     }
 
-    fun prepareVideo(id: Int, title: String, videoUrl: String, func: String){
-        Log.d("DEBUG", "VIDEO_ID: " + id.toString())
-        Log.d("DEBUG", "TITLE: " + title)
-        Log.d("DEBUG", "VIDEO_URL: " + videoUrl)
-        Log.d("DEBUG", "FUNC: " + func)
+    private fun channelSwitch(direction: String){
+        val list = MovieList.list
 
+        var videoId = currentVideoID
+            if(direction.equals("PREVIOUS")){
+            videoId--
+        }else if(direction.equals("NEXT")) {
+            videoId++
+        }
+
+        val channelCount = list.count()
+        if(videoId < 0){
+            videoId = channelCount - 1
+        }else if(videoId >= channelCount){
+            videoId = 0
+        }
+
+        val item = list[videoId]
+        prepareVideo(item.id, item.title, item.videoUrl, item.func)
+    }
+
+    private fun prepareVideo(id: Int, title: String, videoUrl: String, func: String){
         if(videoUrl.equals("")){
             getVideoUrl(id, title, func)
         }else{
@@ -100,25 +108,21 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     }
 
     fun playVideo(id: Int, title: String, videoUrl: String) {
-        val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
-        val playerAdapter = MediaPlayerAdapter(activity)
-        playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE)
-
-        mTransportControlGlue = PlaybackTransportControlGlue(activity, playerAdapter)
-        mTransportControlGlue.host = glueHost
         mTransportControlGlue.title = title
-        mTransportControlGlue.isControlsOverlayAutoHideEnabled = false
-        hideControlsOverlay(false)
-        mTransportControlGlue.isSeekEnabled = false
+        playerAdapter.setDataSource(Uri.parse(videoUrl))
         mTransportControlGlue.playWhenPrepared()
 
-        playerAdapter.setDataSource(Uri.parse(videoUrl))
-
         currentVideoID = id
-        Log.d("DEBUG", "SET currentVideoID: " + currentVideoID.toString())
     }
 
-    fun getVideoUrl(id: Int, title: String, ch: String) {
+    private fun getVideoUrl(id: Int, title: String, ch: String) {
+        val cacheDir = File(activity?.cacheDir, "")
+        val cache = DiskBasedCache(cacheDir, 1024 * 1024)
+        val network = BasicNetwork(HurlStack())
+        val requestQueue = RequestQueue(cache, network).apply {
+            start()
+        }
+
         if(ch.equals("viutv99") or ch.equals("nowtv332") or ch.equals("nowtv331")){
             var url = ""
             val params = JSONObject()
@@ -151,8 +155,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 url,
                 params,
                 Response.Listener { response ->
-                    val video_url = JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString()
-                    playVideo(id, title, video_url)
+                    playVideo(id, title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString())
                 },
                 Response.ErrorListener{ error ->
                     Toast.makeText(activity, error.toString(), Toast.LENGTH_LONG).show()
@@ -163,15 +166,13 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, 1f
             )
 
-            val requestQueue = Volley.newRequestQueue(activity)
             requestQueue.add(jsonObjectRequest)
         }else if(ch.equals("cabletv")){
             val stringRequest = object: StringRequest(
                 Method.POST,
                 "https://mobileapp.i-cable.com/iCableMobile/API/api.php",
                 Response.Listener { response ->
-                    val video_url = JSONObject(JSONObject(response).get("result").toString()).get("stream").toString()
-                    playVideo(id, title, video_url)
+                    playVideo(id, title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString())
                 },
                 Response.ErrorListener{ error ->
                     Toast.makeText(activity, error.toString(), Toast.LENGTH_LONG).show()
@@ -211,12 +212,13 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 }
             }
 
-            val requestQueue = Volley.newRequestQueue(activity)
             requestQueue.add(stringRequest)
         }
     }
 
     companion object {
         private var currentVideoID = -1
+        private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
+        private lateinit var playerAdapter: MediaPlayerAdapter
     }
 }

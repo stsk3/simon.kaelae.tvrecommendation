@@ -36,7 +36,7 @@ class MainFragment : BrowseFragment() {
             listRowAdapter.add(list[j])
         }
 
-        val header = HeaderItem(0, MovieList.MOVIE_CATEGORY[0])
+        val header = HeaderItem(0, "TV")
         rowsAdapter.add(ListRow(header, listRowAdapter))
 
         adapter = rowsAdapter

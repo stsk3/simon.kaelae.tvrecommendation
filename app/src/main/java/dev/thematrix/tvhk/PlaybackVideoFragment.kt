@@ -132,7 +132,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
 
                 params.put("channelno", "099")
 
-                params.put("deviceId", "7849989bff631f5888")
+                params.put("deviceId", "AndroidTV")
                 params.put("deviceType", "5")
             }else{
                 url = "https://hkt-mobile-api.nowtv.now.com/09/1/getLiveURL"
@@ -146,7 +146,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 params.put("audioCode", "")
             }
 
-            params.put("callerReferenceNo", "20190625160500")
+            params.put("callerReferenceNo", "")
             params.put("format", "HLS")
             params.put("mode", "prod")
 
@@ -181,7 +181,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 override fun getHeaders(): MutableMap<String, String> {
                     val params =  mutableMapOf<String, String>()
 
-                    params.put("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 6.0.1; F8132 Build/35.0.A.1.282)")
+                    params.put("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 6.0.1; AndroidTV Build/35.0.A.1.282)")
 
                     return params
                 }

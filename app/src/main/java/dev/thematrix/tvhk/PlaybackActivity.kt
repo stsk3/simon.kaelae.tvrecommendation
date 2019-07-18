@@ -1,16 +1,11 @@
 package dev.thematrix.tvhk
 
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
-import java.security.Key
 
 class PlaybackActivity : FragmentActivity() {
-    var currentVideoID = -1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

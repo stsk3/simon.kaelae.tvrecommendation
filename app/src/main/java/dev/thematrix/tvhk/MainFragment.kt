@@ -3,7 +3,6 @@ package dev.thematrix.tvhk
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.leanback.app.BrowseFragment
 import androidx.leanback.widget.*
 

@@ -1,8 +1,11 @@
 package dev.thematrix.tvhk
 
 import android.net.Uri
+import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
+import android.view.View
 import android.widget.Toast
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
@@ -19,18 +22,16 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 class PlaybackVideoFragment : VideoSupportFragment() {
-    private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
+    lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val (_, title, _, videoUrl, func) = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
+        Log.d("DEBUG", "FRAGMENT")
 
-        if(videoUrl.equals("")){
-            getVideoUrl(title, func)
-        }else{
-            playVideo(title, videoUrl)
-        }
+        val (id, title, _, videoUrl, func) = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
+
+        prepareVideo(id, title, videoUrl, func)
     }
 
     override fun onPause() {
@@ -38,7 +39,67 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         mTransportControlGlue.pause()
     }
 
-    fun playVideo(title: String, videoUrl: String) {
+    fun onKeyDown(keyCode: Int): Boolean{
+        if(
+            keyCode == KeyEvent.KEYCODE_DPAD_UP ||
+            keyCode == KeyEvent.KEYCODE_DPAD_LEFT ||
+            keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS ||
+            keyCode == KeyEvent.KEYCODE_MEDIA_REWIND ||
+            keyCode == KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD ||
+            keyCode == KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD ||
+            keyCode == KeyEvent.KEYCODE_NAVIGATE_PREVIOUS ||
+            keyCode == KeyEvent.KEYCODE_SYSTEM_NAVIGATION_LEFT
+        ){
+            Log.d("DEBUG", "PREVIOUS")
+            val list = MovieList.list
+
+            Log.d("DEBUG", "GET currentVideoID: " + currentVideoID.toString())
+
+            var videoId = currentVideoID - 1
+
+            Log.d("DEBUG", "PENDING_VIDEO_ID: " + videoId.toString())
+
+            if(videoId < 0){
+                videoId = list.count() - 1
+            }
+
+            Log.d("DEBUG", "PENDING_VIDEO_ID: " + videoId.toString())
+
+            val item = list[videoId]
+
+            prepareVideo(item.id, item.title, item.videoUrl, item.func)
+        }else if(
+            keyCode == KeyEvent.KEYCODE_DPAD_DOWN ||
+            keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ||
+            keyCode == KeyEvent.KEYCODE_MEDIA_NEXT ||
+            keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD ||
+            keyCode == KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD ||
+            keyCode == KeyEvent.KEYCODE_MEDIA_STEP_FORWARD ||
+            keyCode == KeyEvent.KEYCODE_NAVIGATE_NEXT ||
+            keyCode == KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT
+        ){
+            Log.d("DEBUG", "NEXT")
+        }else{
+            return false
+        }
+
+        return true
+    }
+
+    fun prepareVideo(id: Int, title: String, videoUrl: String, func: String){
+        Log.d("DEBUG", "VIDEO_ID: " + id.toString())
+        Log.d("DEBUG", "TITLE: " + title)
+        Log.d("DEBUG", "VIDEO_URL: " + videoUrl)
+        Log.d("DEBUG", "FUNC: " + func)
+
+        if(videoUrl.equals("")){
+            getVideoUrl(id, title, func)
+        }else{
+            playVideo(id, title, videoUrl)
+        }
+    }
+
+    fun playVideo(id: Int, title: String, videoUrl: String) {
         val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
         val playerAdapter = MediaPlayerAdapter(activity)
         playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE)
@@ -46,12 +107,18 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         mTransportControlGlue = PlaybackTransportControlGlue(activity, playerAdapter)
         mTransportControlGlue.host = glueHost
         mTransportControlGlue.title = title
+        mTransportControlGlue.isControlsOverlayAutoHideEnabled = false
+        hideControlsOverlay(false)
+        mTransportControlGlue.isSeekEnabled = false
         mTransportControlGlue.playWhenPrepared()
 
         playerAdapter.setDataSource(Uri.parse(videoUrl))
+
+        currentVideoID = id
+        Log.d("DEBUG", "SET currentVideoID: " + currentVideoID.toString())
     }
 
-    fun getVideoUrl(title: String, ch: String) {
+    fun getVideoUrl(id: Int, title: String, ch: String) {
         if(ch.equals("viutv99") or ch.equals("nowtv332") or ch.equals("nowtv331")){
             var url = ""
             val params = JSONObject()
@@ -85,10 +152,10 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 params,
                 Response.Listener { response ->
                     val video_url = JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString()
-                    Log.d("adaptive", video_url)
-                    playVideo(title, video_url)
+                    playVideo(id, title, video_url)
                 },
-                Response.ErrorListener{
+                Response.ErrorListener{ error ->
+                    Toast.makeText(activity, error.toString(), Toast.LENGTH_LONG).show()
                 }
             )
 
@@ -104,10 +171,10 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 "https://mobileapp.i-cable.com/iCableMobile/API/api.php",
                 Response.Listener { response ->
                     val video_url = JSONObject(JSONObject(response).get("result").toString()).get("stream").toString()
-                    Log.d("adaptive", video_url)
-                    playVideo(title, video_url)
+                    playVideo(id, title, video_url)
                 },
-                Response.ErrorListener{
+                Response.ErrorListener{ error ->
+                    Toast.makeText(activity, error.toString(), Toast.LENGTH_LONG).show()
                 }
             ){
                 override fun getHeaders(): MutableMap<String, String> {
@@ -147,5 +214,9 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             val requestQueue = Volley.newRequestQueue(activity)
             requestQueue.add(stringRequest)
         }
+    }
+
+    companion object {
+        private var currentVideoID = -1
     }
 }

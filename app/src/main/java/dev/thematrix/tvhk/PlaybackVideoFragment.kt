@@ -191,15 +191,16 @@ class PlaybackVideoFragment : VideoSupportFragment() {
 
                     if(ch.equals("cabletv109")){
                         params.put("channel_no", "_9")
+                        params.put("vlink", "_9")
                     }else if(ch.equals("cabletv110")){
                         params.put("channel_no", "_10")
+                        params.put("vlink", "_10")
                     }
 
                     params.put("device", "aos_mobile")
                     params.put("method", "streamingGenerator2")
                     params.put("quality", "h")
                     params.put("uuid", "")
-                    params.put("vlink", "_9")
                     params.put("is_premium", "0")
                     params.put("network", "wifi")
                     params.put("platform", "1")

@@ -19,7 +19,6 @@ class MainFragment : BrowseFragment() {
 
     private fun setupUIElements() {
         title = getString(R.string.browse_title)
-
         headersState = BrowseFragment.HEADERS_HIDDEN
         isHeadersTransitionOnBackEnabled = false
     }

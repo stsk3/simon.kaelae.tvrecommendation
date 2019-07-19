@@ -12,7 +12,8 @@ object MovieList {
             "ViuTV",
             "now 新聞台",
             "now 直播台",
-            "有線新聞台",
+            "有線 新聞台",
+            "有線 直播新聞台",
             "港台電視 31",
             "港台電視 32"
         )
@@ -22,11 +23,13 @@ object MovieList {
             "http://www.nettv.live/uploads/18/1-1PG11QQ2114.jpg",
             "http://www.nettv.live/uploads/18/1-1PG11I415a1.jpg",
             "https://upload.wikimedia.org/wikipedia/zh/4/40/Cable_News_Channel.png",
+            "https://upload.wikimedia.org/wikipedia/zh/4/40/Cable_News_Channel.png",
             "http://rthk.hk/about/dtt/images/logo_tv31.jpg",
             "http://rthk.hk/about/dtt/images/logo_tv32.jpg"
         )
 
         val videoUrl = arrayOf(
+            "",
             "",
             "",
             "",
@@ -39,7 +42,8 @@ object MovieList {
             "viutv99",
             "nowtv332",
             "nowtv331",
-            "cabletv",
+            "cabletv109",
+            "cabletv110",
             "",
             ""
         )

@@ -123,7 +123,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             start()
         }
 
-        if(ch.equals("viutv99") or ch.equals("nowtv332") or ch.equals("nowtv331")){
+        if(ch.equals("viutv99") || ch.equals("nowtv332") || ch.equals("nowtv331")){
             var url = ""
             val params = JSONObject()
 
@@ -167,7 +167,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             )
 
             requestQueue.add(jsonObjectRequest)
-        }else if(ch.equals("cabletv")){
+        }else if(ch.equals("cabletv109") || ch.equals("cabletv110")){
             val stringRequest = object: StringRequest(
                 Method.POST,
                 "https://mobileapp.i-cable.com/iCableMobile/API/api.php",
@@ -189,10 +189,15 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 override fun getParams(): MutableMap<String, String> {
                     val params =  mutableMapOf<String, String>()
 
+                    if(ch.equals("cabletv109")){
+                        params.put("channel_no", "_9")
+                    }else if(ch.equals("cabletv110")){
+                        params.put("channel_no", "_10")
+                    }
+
                     params.put("device", "aos_mobile")
-                    params.put("channel_no", "_9")
                     params.put("method", "streamingGenerator2")
-                    params.put("quality", "m")
+                    params.put("quality", "h")
                     params.put("uuid", "")
                     params.put("vlink", "_9")
                     params.put("is_premium", "0")

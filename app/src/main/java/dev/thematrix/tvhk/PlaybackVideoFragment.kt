@@ -42,7 +42,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
         mTransportControlGlue.host = glueHost
 
-        mTransportControlGlue.isControlsOverlayAutoHideEnabled = false
+        mTransportControlGlue.isControlsOverlayAutoHideEnabled = true
         hideControlsOverlay(false)
         mTransportControlGlue.isSeekEnabled = false
         mTransportControlGlue.playWhenPrepared()

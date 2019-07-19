@@ -22,8 +22,8 @@ object MovieList {
             "https://static.viu.tv/public/images/amsUpload/201701/1484127151250_ChannelLogo99.jpg",
             "http://www.nettv.live/uploads/18/1-1PG11QQ2114.jpg",
             "http://www.nettv.live/uploads/18/1-1PG11I415a1.jpg",
-            "https://upload.wikimedia.org/wikipedia/zh/4/40/Cable_News_Channel.png",
-            "https://upload.wikimedia.org/wikipedia/zh/4/40/Cable_News_Channel.png",
+            "http://cn.itver.cc/wp-content/uploads/2015/05/cable-tv.jpg",
+            "http://cn.itver.cc/wp-content/uploads/2015/05/cable-tv.jpg",
             "http://rthk.hk/about/dtt/images/logo_tv31.jpg",
             "http://rthk.hk/about/dtt/images/logo_tv32.jpg"
         )

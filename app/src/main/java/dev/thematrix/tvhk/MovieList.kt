@@ -21,11 +21,11 @@ object MovieList {
 
         val cardImageUrl = arrayOf(
             "https://static.viu.tv/public/images/amsUpload/201701/1484127151250_ChannelLogo99.jpg",
-            "http://www.nettv.live/uploads/18/1-1PG11QQ2114.jpg",
-            "http://www.nettv.live/uploads/18/1-1PG11I415a1.jpg",
-            "http://plib.aastocks.com/aafnnews/image/medialib/20181026093830853_m.jpg",
-            "http://cn.itver.cc/wp-content/uploads/2015/05/cable-tv.jpg",
-            "http://cn.itver.cc/wp-content/uploads/2015/05/cable-tv.jpg",
+            "https://www.nettv.live/uploads/18/1-1PG11QQ2114.jpg",
+            "https://www.nettv.live/uploads/18/1-1PG11I415a1.jpg",
+            "https://plib.aastocks.com/aafnnews/image/medialib/20181026093830853_m.jpg",
+            "https://cn.itver.cc/wp-content/uploads/2015/05/cable-tv.jpg",
+            "https://cn.itver.cc/wp-content/uploads/2015/05/cable-tv.jpg",
             "http://rthk.hk/about/dtt/images/logo_tv31.jpg",
             "http://rthk.hk/about/dtt/images/logo_tv32.jpg"
         )

@@ -2,7 +2,6 @@ package dev.thematrix.tvhk
 
 import android.net.Uri
 import android.os.Bundle
-import android.view.KeyEvent
 import android.widget.Toast
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
@@ -58,41 +57,12 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         }
     }
 
-    fun onKeyDown(keyCode: Int): Boolean{
-        if(
-            keyCode == KeyEvent.KEYCODE_DPAD_UP ||
-            keyCode == KeyEvent.KEYCODE_DPAD_LEFT ||
-            keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS ||
-            keyCode == KeyEvent.KEYCODE_MEDIA_REWIND ||
-            keyCode == KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD ||
-            keyCode == KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD ||
-            keyCode == KeyEvent.KEYCODE_NAVIGATE_PREVIOUS ||
-            keyCode == KeyEvent.KEYCODE_SYSTEM_NAVIGATION_LEFT
-        ){
-            channelSwitch("PREVIOUS")
-        }else if(
-            keyCode == KeyEvent.KEYCODE_DPAD_DOWN ||
-            keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ||
-            keyCode == KeyEvent.KEYCODE_MEDIA_NEXT ||
-            keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD ||
-            keyCode == KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD ||
-            keyCode == KeyEvent.KEYCODE_MEDIA_STEP_FORWARD ||
-            keyCode == KeyEvent.KEYCODE_NAVIGATE_NEXT ||
-            keyCode == KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT
-        ){
-            channelSwitch("NEXT")
-        }else{
-            return false
-        }
-
-        return true
-    }
-
-    private fun channelSwitch(direction: String){
+    fun channelSwitch(direction: String){
         val list = MovieList.list
 
         var videoId = currentVideoID
-            if(direction.equals("PREVIOUS")){
+
+        if(direction.equals("PREVIOUS")){
             videoId--
         }else if(direction.equals("NEXT")) {
             videoId++
@@ -133,7 +103,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             val params = JSONObject()
 
             if(ch.equals("viutv99")){
-                url = "https://api.viu.now.com/p8/2/getLiveURL"
+                url = "http://api.viu.now.com/p8/2/getLiveURL"
 
                 params.put("channelno", "099")
 
@@ -160,7 +130,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 url,
                 params,
                 Response.Listener { response ->
-                    playVideo(id, title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString())
+                    playVideo(id, title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString().replace("https://", "http://"))
                 },
                 Response.ErrorListener{ error ->
                     Toast.makeText(this.activity, error.toString(), Toast.LENGTH_SHORT).show()
@@ -175,9 +145,9 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         }else if(ch.equals("cabletv109") || ch.equals("cabletv110")){
             val stringRequest = object: StringRequest(
                 Method.POST,
-                "https://mobileapp.i-cable.com/iCableMobile/API/api.php",
+                "http://mobileapp.i-cable.com/iCableMobile/API/api.php",
                 Response.Listener { response ->
-                    playVideo(id, title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString())
+                    playVideo(id, title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString().replace("https://", "http://"))
                 },
                 Response.ErrorListener{ error ->
                     Toast.makeText(this.activity, error.toString(), Toast.LENGTH_SHORT).show()

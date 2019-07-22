@@ -25,6 +25,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         val (id, title, _, videoUrl, func) = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
 
         setUpPlayer()
+        setUpNetwork()
 
         prepareVideo(id, title, videoUrl, func)
     }
@@ -46,6 +47,15 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         hideControlsOverlay(false)
         mTransportControlGlue.isSeekEnabled = false
         mTransportControlGlue.playWhenPrepared()
+    }
+
+    private fun setUpNetwork(){
+        val cacheDir = File(activity?.cacheDir, "")
+        val cache = DiskBasedCache(cacheDir, 1024 * 1024)
+        val network = BasicNetwork(HurlStack())
+        requestQueue = RequestQueue(cache, network).apply {
+            start()
+        }
     }
 
     fun onKeyDown(keyCode: Int): Boolean{
@@ -100,6 +110,8 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     }
 
     private fun prepareVideo(id: Int, title: String, videoUrl: String, func: String){
+        currentVideoID = id
+
         if(videoUrl.equals("")){
             getVideoUrl(id, title, func)
         }else{
@@ -111,17 +123,10 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         mTransportControlGlue.title = title
         playerAdapter.setDataSource(Uri.parse(videoUrl))
         mTransportControlGlue.playWhenPrepared()
-
-        currentVideoID = id
     }
 
     private fun getVideoUrl(id: Int, title: String, ch: String) {
-        val cacheDir = File(activity?.cacheDir, "")
-        val cache = DiskBasedCache(cacheDir, 1024 * 1024)
-        val network = BasicNetwork(HurlStack())
-        val requestQueue = RequestQueue(cache, network).apply {
-            start()
-        }
+        requestQueue.cancelAll(this)
 
         if(ch.equals("viutv99") || ch.equals("nowtv332") || ch.equals("nowtv331")){
             var url = ""
@@ -158,7 +163,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                     playVideo(id, title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString())
                 },
                 Response.ErrorListener{ error ->
-                    Toast.makeText(activity, error.toString(), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this.activity, error.toString(), Toast.LENGTH_SHORT).show()
                 }
             )
 
@@ -175,7 +180,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                     playVideo(id, title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString())
                 },
                 Response.ErrorListener{ error ->
-                    Toast.makeText(activity, error.toString(), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this.activity, error.toString(), Toast.LENGTH_SHORT).show()
                 }
             ){
                 override fun getHeaders(): MutableMap<String, String> {
@@ -226,5 +231,6 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         private var currentVideoID = -1
         private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
         private lateinit var playerAdapter: MediaPlayerAdapter
+        private lateinit var requestQueue: RequestQueue
     }
 }

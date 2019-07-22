@@ -19,11 +19,11 @@ class PlaybackActivity : FragmentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if(PlaybackVideoFragment().onKeyDown(keyCode)){
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if(PlaybackVideoFragment().onKeyDown(event.keyCode)){
             return true
         }else{
-            return super.onKeyDown(keyCode, event)
+            return super.dispatchKeyEvent(event)
         }
     }
 }

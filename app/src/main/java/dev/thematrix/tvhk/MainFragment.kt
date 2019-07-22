@@ -19,8 +19,8 @@ class MainFragment : BrowseFragment() {
 
     private fun setupUIElements() {
         title = getString(R.string.browse_title)
-        headersState = BrowseFragment.HEADERS_HIDDEN
-        isHeadersTransitionOnBackEnabled = false
+//        headersState = BrowseFragment.HEADERS_HIDDEN
+//        isHeadersTransitionOnBackEnabled = false
     }
 
     private fun loadRows() {

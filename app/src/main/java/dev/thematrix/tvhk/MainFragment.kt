@@ -18,7 +18,7 @@ class MainFragment : BrowseFragment() {
     }
 
     private fun setupUIElements() {
-        title = getString(R.string.browse_title)
+        badgeDrawable = activity.resources.getDrawable(R.drawable.banner)
 //        headersState = BrowseFragment.HEADERS_HIDDEN
 //        isHeadersTransitionOnBackEnabled = false
     }

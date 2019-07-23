@@ -2,20 +2,16 @@ package dev.thematrix.tvhk
 
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
 import androidx.leanback.media.MediaPlayerAdapter
 import androidx.leanback.media.PlaybackTransportControlGlue
 import androidx.leanback.widget.PlaybackControlsRow
-import com.android.volley.DefaultRetryPolicy
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.Response
+import com.android.volley.*
 import com.android.volley.toolbox.*
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
+
 
 class PlaybackVideoFragment : VideoSupportFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,10 +45,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     }
 
     private fun setUpNetwork(){
-        val cacheDir = File(activity?.cacheDir, "")
-        val cache = DiskBasedCache(cacheDir, 1024 * 1024)
-        val network = BasicNetwork(HurlStack())
-        requestQueue = RequestQueue(cache, network).apply {
+        requestQueue = RequestQueue(NoCache(), BasicNetwork(HurlStack())).apply {
             start()
         }
     }
@@ -103,7 +96,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             val params = JSONObject()
 
             if(ch.equals("viutv99")){
-                url = "http://api.viu.now.com/p8/2/getLiveURL"
+                url = "https://api.viu.now.com/p8/2/getLiveURL"
 
                 params.put("channelno", "099")
 
@@ -130,29 +123,29 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 url,
                 params,
                 Response.Listener { response ->
-                    playVideo(id, title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString().replace("https://", "http://"))
+                    playVideo(id, title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString())
                 },
                 Response.ErrorListener{ error ->
-                    Toast.makeText(this.activity, error.toString(), Toast.LENGTH_SHORT).show()
                 }
             )
 
-            jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
-                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, 1f
-            )
+            jsonObjectRequest.retryPolicy = DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 5, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
 
             requestQueue.add(jsonObjectRequest)
         }else if(ch.equals("cabletv109") || ch.equals("cabletv110")){
             val stringRequest = object: StringRequest(
                 Method.POST,
-                "http://mobileapp.i-cable.com/iCableMobile/API/api.php",
+                "https://mobileapp.i-cable.com/iCableMobile/API/api.php",
                 Response.Listener { response ->
-                    playVideo(id, title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString().replace("https://", "http://"))
+                    playVideo(id, title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString())
                 },
                 Response.ErrorListener{ error ->
-                    Toast.makeText(this.activity, error.toString(), Toast.LENGTH_SHORT).show()
                 }
             ){
+                override fun getRetryPolicy(): RetryPolicy {
+                    return DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 5, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+                }
+
                 override fun getHeaders(): MutableMap<String, String> {
                     val params =  mutableMapOf<String, String>()
 

@@ -23,6 +23,7 @@ class PlaybackActivity : FragmentActivity() {
         lateinit var direction: String
 
         if(
+            event.keyCode == KeyEvent.KEYCODE_CHANNEL_UP ||
             event.keyCode == KeyEvent.KEYCODE_DPAD_UP ||
             event.keyCode == KeyEvent.KEYCODE_DPAD_LEFT ||
             event.keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS ||
@@ -34,6 +35,7 @@ class PlaybackActivity : FragmentActivity() {
         ){
             direction = "PREVIOUS"
         }else if(
+            event.keyCode == KeyEvent.KEYCODE_CHANNEL_DOWN ||
             event.keyCode == KeyEvent.KEYCODE_DPAD_DOWN ||
             event.keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ||
             event.keyCode == KeyEvent.KEYCODE_MEDIA_NEXT ||
@@ -48,7 +50,7 @@ class PlaybackActivity : FragmentActivity() {
             return super.dispatchKeyEvent(event)
         }
 
-        if(event.action == KeyEvent.ACTION_DOWN){
+        if(event.action == KeyEvent.ACTION_UP){
             PlaybackVideoFragment().channelSwitch(direction)
         }
 

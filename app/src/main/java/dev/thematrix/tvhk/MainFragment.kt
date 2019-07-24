@@ -18,24 +18,34 @@ class MainFragment : BrowseFragment() {
     }
 
     private fun setupUIElements() {
+        title = getString(R.string.app_name)
         badgeDrawable = activity.resources.getDrawable(R.drawable.transparentbanner)
 //        headersState = BrowseFragment.HEADERS_HIDDEN
 //        isHeadersTransitionOnBackEnabled = false
     }
 
     private fun loadRows() {
-        val list = MovieList.list
-
         val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
         val cardPresenter = CardPresenter()
 
-        val listRowAdapter = ArrayObjectAdapter(cardPresenter)
-        for (j in 0 until list.count()) {
-            listRowAdapter.add(list[j])
+        lateinit var header: HeaderItem
+        var listRowAdapter = ArrayObjectAdapter(cardPresenter)
+        for (i in 0 until MovieList.list.count()) {
+            if (i % 3 == 0) {
+                if(listRowAdapter.size() > 0){
+                    rowsAdapter.add(ListRow(header, listRowAdapter))
+                }
+
+                header = HeaderItem(i.toLong(), MovieList.CATEGORY[i / 3])
+                listRowAdapter = ArrayObjectAdapter(cardPresenter)
+            }
+
+            listRowAdapter.add(MovieList.list[i])
         }
 
-        val header = HeaderItem(0, "TV")
-        rowsAdapter.add(ListRow(header, listRowAdapter))
+        if(listRowAdapter.size() > 0){
+            rowsAdapter.add(ListRow(header, listRowAdapter))
+        }
 
         adapter = rowsAdapter
     }

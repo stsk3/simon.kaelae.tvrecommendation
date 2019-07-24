@@ -1,6 +1,12 @@
 package dev.thematrix.tvhk
 
 object MovieList {
+    val CATEGORY = arrayOf(
+        "Now TV",
+        "CableTV",
+        "RTHK TV"
+    )
+
     val list: List<Movie> by lazy {
         setupMovies()
     }

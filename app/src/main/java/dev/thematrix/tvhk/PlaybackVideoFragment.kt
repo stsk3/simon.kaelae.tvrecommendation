@@ -12,7 +12,6 @@ import com.android.volley.toolbox.*
 import org.json.JSONArray
 import org.json.JSONObject
 
-
 class PlaybackVideoFragment : VideoSupportFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +40,6 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         mTransportControlGlue.isControlsOverlayAutoHideEnabled = true
         hideControlsOverlay(false)
         mTransportControlGlue.isSeekEnabled = false
-        mTransportControlGlue.playWhenPrepared()
     }
 
     private fun setUpNetwork(){
@@ -76,19 +74,19 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         currentVideoID = id
 
         if(videoUrl.equals("")){
-            getVideoUrl(id, title, func)
+            getVideoUrl(title, func)
         }else{
-            playVideo(id, title, videoUrl)
+            playVideo(title, videoUrl)
         }
     }
 
-    fun playVideo(id: Int, title: String, videoUrl: String) {
+    fun playVideo(title: String, videoUrl: String) {
         mTransportControlGlue.title = title
         playerAdapter.setDataSource(Uri.parse(videoUrl))
         mTransportControlGlue.playWhenPrepared()
     }
 
-    private fun getVideoUrl(id: Int, title: String, ch: String) {
+    private fun getVideoUrl(title: String, ch: String) {
         requestQueue.cancelAll(this)
 
         if(ch.equals("viutv99") || ch.equals("nowtv332") || ch.equals("nowtv331")){
@@ -123,7 +121,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 url,
                 params,
                 Response.Listener { response ->
-                    playVideo(id, title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString())
+                    playVideo(title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString())
                 },
                 Response.ErrorListener{ error ->
                 }
@@ -137,7 +135,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 Method.POST,
                 "https://mobileapp.i-cable.com/iCableMobile/API/api.php",
                 Response.Listener { response ->
-                    playVideo(id, title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString())
+                    playVideo(title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString())
                 },
                 Response.ErrorListener{ error ->
                 }

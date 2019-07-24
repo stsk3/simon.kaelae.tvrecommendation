@@ -2,6 +2,7 @@ package dev.thematrix.tvhk
 
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
 import androidx.leanback.media.MediaPlayerAdapter
@@ -40,6 +41,8 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         mTransportControlGlue.isControlsOverlayAutoHideEnabled = true
         hideControlsOverlay(false)
         mTransportControlGlue.isSeekEnabled = false
+
+        errorToast = Toast.makeText(context, "發生錯誤，請稍候再試。如問題持續，請聯絡我們。", Toast.LENGTH_SHORT)
     }
 
     private fun setUpNetwork(){
@@ -49,6 +52,8 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     }
 
     fun channelSwitch(direction: String){
+        lastDirection = direction
+
         val list = MovieList.list
 
         var videoId = currentVideoID
@@ -121,7 +126,12 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 url,
                 params,
                 Response.Listener { response ->
-                    playVideo(title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString())
+                    try {
+                        playVideo(title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString())
+                    }catch (exception: Exception){
+                        errorToast.show()
+                        channelSwitch(lastDirection)
+                    }
                 },
                 Response.ErrorListener{ error ->
                 }
@@ -135,7 +145,12 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 Method.POST,
                 "https://mobileapp.i-cable.com/iCableMobile/API/api.php",
                 Response.Listener { response ->
-                    playVideo(title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString())
+                    try {
+                        playVideo(title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString())
+                    }catch (exception: Exception){
+                        errorToast.show()
+                        channelSwitch(lastDirection)
+                    }
                 },
                 Response.ErrorListener{ error ->
                 }
@@ -193,5 +208,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
         private lateinit var playerAdapter: MediaPlayerAdapter
         private lateinit var requestQueue: RequestQueue
+        private lateinit var lastDirection: String
+        private lateinit var errorToast: Toast
     }
 }

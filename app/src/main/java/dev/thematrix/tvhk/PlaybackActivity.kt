@@ -4,6 +4,12 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.WindowManager
 import androidx.fragment.app.FragmentActivity
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException
+import com.google.android.gms.common.GooglePlayServicesRepairableException
+import com.google.android.gms.security.ProviderInstaller
+import java.security.KeyManagementException
+import java.security.NoSuchAlgorithmException
+import javax.net.ssl.SSLContext
 
 class PlaybackActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,6 +23,29 @@ class PlaybackActivity : FragmentActivity() {
         }
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        setUpSSL()
+    }
+
+    private fun setUpSSL(){
+        try {
+            ProviderInstaller.installIfNeeded(applicationContext)
+            var sslContext: SSLContext? = null
+            sslContext = SSLContext.getInstance("TLSv1.2")
+            try {
+                sslContext!!.init(null, null, null)
+                val engine = sslContext.createSSLEngine()
+                engine.enabledCipherSuites
+            } catch (e: KeyManagementException) {
+                e.printStackTrace()
+            }
+        } catch (e: NoSuchAlgorithmException) {
+            e.printStackTrace()
+        } catch (e: GooglePlayServicesNotAvailableException) {
+            e.printStackTrace()
+        } catch (e: GooglePlayServicesRepairableException) {
+            e.printStackTrace()
+        }
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

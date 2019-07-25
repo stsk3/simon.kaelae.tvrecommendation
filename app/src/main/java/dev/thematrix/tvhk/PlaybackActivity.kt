@@ -51,7 +51,7 @@ class PlaybackActivity : FragmentActivity() {
         }
 
         if(event.action == KeyEvent.ACTION_UP){
-            PlaybackVideoFragment().channelSwitch(direction)
+            PlaybackVideoFragment().channelSwitch(direction, true)
         }
 
         return true

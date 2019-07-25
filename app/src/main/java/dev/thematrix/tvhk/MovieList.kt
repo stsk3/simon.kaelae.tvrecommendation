@@ -16,13 +16,24 @@ object MovieList {
     private fun setupMovies(): List<Movie> {
         val title = arrayOf(
             "ViuTV",
-            "now 新聞台",
-            "now 直播台",
+            "now新聞台",
+            "now直播台",
             "香港開電視",
-            "有線 新聞台",
-            "有線 直播新聞台",
-            "港台電視 31",
-            "港台電視 32"
+            "有線新聞台",
+            "有線直播台",
+            "港台電視31",
+            "港台電視32"
+        )
+
+        val description = arrayOf(
+            "",
+            "",
+            "",
+            "",
+            "",
+            "畫面比例可能不符合你的電視",
+            "",
+            ""
         )
 
         val cardImageUrl = arrayOf(
@@ -61,6 +72,7 @@ object MovieList {
         val list = title.indices.map {
             buildMovieInfo(
                 title[it],
+                description[it],
                 cardImageUrl[it],
                 videoUrl[it],
                 func[it]
@@ -72,6 +84,7 @@ object MovieList {
 
     private fun buildMovieInfo(
         title: String,
+        description: String,
         cardImageUrl: String,
         videoUrl: String,
         func: String
@@ -79,6 +92,7 @@ object MovieList {
         val movie = Movie()
         movie.id = count++
         movie.title = title
+        movie.description = description
         movie.cardImageUrl = cardImageUrl
         movie.videoUrl = videoUrl
         movie.func = func

@@ -17,7 +17,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val (id, title, _, videoUrl, func) = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
+        val (id, title, _, _, videoUrl, func) = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
 
         setUpPlayer()
         setUpNetwork()
@@ -42,7 +42,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         hideControlsOverlay(false)
         mTransportControlGlue.isSeekEnabled = false
 
-        errorToast = Toast.makeText(context, "發生錯誤，請稍候再試。如問題持續，請聯絡我們。", Toast.LENGTH_SHORT)
+        toast = Toast.makeText(context, "", Toast.LENGTH_LONG)
     }
 
     private fun setUpNetwork(){
@@ -51,7 +51,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         }
     }
 
-    fun channelSwitch(direction: String){
+    fun channelSwitch(direction: String, showMessage: Boolean){
         lastDirection = direction
 
         val list = MovieList.list
@@ -72,6 +72,12 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         }
 
         val item = list[videoId]
+
+        if(showMessage){
+            toast.setText("正在轉台到 " + item.title)
+            toast.show()
+        }
+
         prepareVideo(item.id, item.title, item.videoUrl, item.func)
     }
 
@@ -129,8 +135,9 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                     try {
                         playVideo(title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString())
                     }catch (exception: Exception){
-                        errorToast.show()
-                        channelSwitch(lastDirection)
+                        toast.setText(title + " 暫時未能播放，請稍候再試。")
+                        toast.show()
+                        channelSwitch(lastDirection, false)
                     }
                 },
                 Response.ErrorListener{ error ->
@@ -148,8 +155,9 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                     try {
                         playVideo(title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString())
                     }catch (exception: Exception){
-                        errorToast.show()
-                        channelSwitch(lastDirection)
+                        toast.setText(title + " 暫時未能播放，請稍候再試。")
+                        toast.show()
+                        channelSwitch(lastDirection, false)
                     }
                 },
                 Response.ErrorListener{ error ->
@@ -208,7 +216,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
         private lateinit var playerAdapter: MediaPlayerAdapter
         private lateinit var requestQueue: RequestQueue
-        private lateinit var lastDirection: String
-        private lateinit var errorToast: Toast
+        private var lastDirection = "NEXT"
+        private lateinit var toast: Toast
     }
 }

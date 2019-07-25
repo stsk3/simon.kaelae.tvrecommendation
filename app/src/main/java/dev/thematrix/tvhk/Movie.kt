@@ -5,6 +5,7 @@ import java.io.Serializable
 data class Movie(
     var id: Int = 0,
     var title: String = "",
+    var description: String = "",
     var cardImageUrl: String = "",
     var videoUrl: String = "",
     var func: String = ""
@@ -14,6 +15,7 @@ data class Movie(
         return "Movie{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
                 ", cardImageUrl='" + cardImageUrl + '\'' +
                 ", videoUrl='" + videoUrl + '\'' +
                 '}'

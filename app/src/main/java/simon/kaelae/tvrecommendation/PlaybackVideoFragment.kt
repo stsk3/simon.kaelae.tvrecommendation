@@ -1,7 +1,9 @@
-package dev.thematrix.tvhk
+package simon.kaelae.tvrecommendation
 
+import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
@@ -18,11 +20,23 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         super.onCreate(savedInstanceState)
 
         val (id, title, _, _, videoUrl, func) = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
+        var inreview = "yes"
+        val sharedPreference = context?.getSharedPreferences("inreview", Activity.MODE_PRIVATE)
+        inreview = sharedPreference?.getString("inreview","yes")!!
+        if(inreview == "yes") {
+            Toast.makeText(context, "WARNING:May contain old video quality that aspect ratio may not fit screen", Toast.LENGTH_LONG).show()
+        }else{
+
+        }
 
         setUpPlayer()
         setUpNetwork()
 
         prepareVideo(id, title, videoUrl, func)
+
+
+
+
     }
 
     override fun onPause() {
@@ -30,7 +44,10 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         mTransportControlGlue.pause()
     }
 
+
     private fun setUpPlayer(){
+
+
         playerAdapter = MediaPlayerAdapter(activity)
         playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE)
         mTransportControlGlue = PlaybackTransportControlGlue(activity, playerAdapter)

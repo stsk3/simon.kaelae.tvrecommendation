@@ -1,4 +1,4 @@
-package dev.thematrix.tvhk
+package simon.kaelae.tvrecommendation
 
 import androidx.leanback.widget.AbstractDetailsDescriptionPresenter
 

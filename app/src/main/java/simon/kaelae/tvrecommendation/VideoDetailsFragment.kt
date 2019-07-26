@@ -1,7 +1,8 @@
-package dev.thematrix.tvhk
+package simon.kaelae.tvrecommendation
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.leanback.app.DetailsFragment
 
 class VideoDetailsFragment : DetailsFragment() {

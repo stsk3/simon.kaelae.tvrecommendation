@@ -1,5 +1,6 @@
-package dev.thematrix.tvhk
+package simon.kaelae.tvrecommendation
 
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -7,19 +8,26 @@ import androidx.leanback.app.BrowseFragment
 import androidx.leanback.widget.*
 
 class MainFragment : BrowseFragment() {
+    var inreview = "yes"
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+        val sharedPreference = this.getActivity().getSharedPreferences("inreview", MODE_PRIVATE);
+        inreview = sharedPreference.getString("inreview", "yes")!!
         setupUIElements()
 
         loadRows()
 
         setupEventListeners()
+
+
+
     }
 
     private fun setupUIElements() {
         title = getString(R.string.app_name)
-        badgeDrawable = activity.resources.getDrawable(R.drawable.transparentbanner)
+
+        showTitle(true)
+        //badgeDrawable = activity.resources.getDrawable(R.drawable.transparentbanner)
 //        headersState = BrowseFragment.HEADERS_HIDDEN
 //        isHeadersTransitionOnBackEnabled = false
     }
@@ -28,24 +36,37 @@ class MainFragment : BrowseFragment() {
         val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
         val cardPresenter = CardPresenter()
 
-        lateinit var header: HeaderItem
-        var listRowAdapter = ArrayObjectAdapter(cardPresenter)
-        for (i in 0 until MovieList.list.count()) {
-            if (i % 3 == 0) {
-                if(listRowAdapter.size() > 0){
-                    rowsAdapter.add(ListRow(header, listRowAdapter))
-                }
+        val listRowAdapter = ArrayObjectAdapter(cardPresenter)
 
-                header = HeaderItem(i.toLong(), MovieList.CATEGORY[i / 3])
-                listRowAdapter = ArrayObjectAdapter(cardPresenter)
-            }
 
-            listRowAdapter.add(MovieList.list[i])
+        val listRowAdapter2 = ArrayObjectAdapter(cardPresenter)
+
+
+        listRowAdapter.add(MovieList.list[1])
+        listRowAdapter.add(MovieList.list[2])
+
+        if (inreview == "yes") {
+
+        } else {
+            listRowAdapter.add(MovieList.list[0])
         }
 
-        if(listRowAdapter.size() > 0){
-            rowsAdapter.add(ListRow(header, listRowAdapter))
-        }
+        listRowAdapter2.add(MovieList.list[4])
+        listRowAdapter2.add(MovieList.list[5])
+        listRowAdapter2.add(MovieList.list[3])
+        val listRowAdapter3 = ArrayObjectAdapter(cardPresenter)
+
+        listRowAdapter3.add(MovieList.list[6])
+        listRowAdapter3.add(MovieList.list[7])
+
+
+        val header = HeaderItem(0, "PCCW")
+        val header2 = HeaderItem(1, "i-Cable")
+        val header3 = HeaderItem(2, "RTHK")
+
+        rowsAdapter.add(ListRow(header, listRowAdapter))
+        rowsAdapter.add(ListRow(header2, listRowAdapter2))
+        rowsAdapter.add(ListRow(header3, listRowAdapter3))
 
         adapter = rowsAdapter
     }

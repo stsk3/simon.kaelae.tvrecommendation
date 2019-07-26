@@ -8,14 +8,21 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.1"
     defaultConfig {
-        applicationId "dev.thematrix.tvhk"
-        minSdkVersion 19
+        applicationId "simon.kaelae.tvrecommendation"
+        minSdkVersion 21
         targetSdkVersion 29
-        versionCode 15
-        versionName "15"
+        versionCode 8
+        versionName "8"
+        buildConfigField("String", "APP_SCHEME", "\"${APP_SCHEME}\"")
+        buildConfigField("String", "AUTHORITY", "\"${AUTHORITY}\"")
     }
     buildTypes {
+        debug {
+            manifestPlaceholders = [domain: 'dev.thematrix.tvhk.dev', scheme: "${APP_SCHEME}"]
+        }
         release {
+            manifestPlaceholders = [domain: 'dev.thematrix.tvhk', scheme: "${APP_SCHEME}"]
+
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -27,7 +34,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.leanback:leanback:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.tvprovider:tvprovider:1.0.0'
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'com.github.bumptech.glide:glide:3.8.0'
     implementation 'com.google.android.gms:play-services-safetynet:17.0.0'
+    implementation 'com.google.firebase:firebase-core:17.0.1'
+    implementation 'com.google.firebase:firebase-messaging:19.0.1'
+    implementation 'com.google.firebase:firebase-database:18.0.1'
 }
+apply plugin: 'com.google.gms.google-services'

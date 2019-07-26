@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "997114098233",
+    "firebase_url": "https://hktv-93446.firebaseio.com",
+    "project_id": "hktv-93446",
+    "storage_bucket": "hktv-93446.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997114098233:android:6fb05d05a65d9288",
+        "android_client_info": {
+          "package_name": "simon.kaelae.tvrecommendation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "997114098233-2tulnuuatk58olcbbamg2evd32ra6fpn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSKcm8Gz8ONQlqaNoc3Q-03_3veROsd7M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "997114098233-2tulnuuatk58olcbbamg2evd32ra6fpn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

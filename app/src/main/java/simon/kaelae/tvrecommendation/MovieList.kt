@@ -1,6 +1,9 @@
-package dev.thematrix.tvhk
+package simon.kaelae.tvrecommendation
+
 
 object MovieList {
+
+
     val CATEGORY = arrayOf(
         "Now TV",
         "CableTV",
@@ -26,25 +29,25 @@ object MovieList {
         )
 
         val description = arrayOf(
+            "Only allow IP Address in HK",
             "",
             "",
             "",
             "",
             "",
-            "畫面比例可能不符合你的電視",
             "",
             ""
         )
 
         val cardImageUrl = arrayOf(
-            "https://thematrix.dev/tvhk/viutv.jpg",
-            "https://thematrix.dev/tvhk/nowtv.jpg",
-            "https://thematrix.dev/tvhk/nowtv.jpg",
-            "https://thematrix.dev/tvhk/opentv.jpg",
-            "https://thematrix.dev/tvhk/cabletv.jpg",
-            "https://thematrix.dev/tvhk/cabletv.jpg",
-            "https://thematrix.dev/tvhk/rthktv31.jpg",
-            "https://thematrix.dev/tvhk/rthktv32.jpg"
+            "http://i.imgur.com/xTtwwzS.jpg",
+            "http://i.imgur.com/ucm7n4h.jpg",
+            "http://i.imgur.com/dydKNhm.jpg",
+            "http://i.imgur.com/a2yFl08.jpg",
+            "http://i.imgur.com/a7rFbnX.png",
+            "http://i.imgur.com/ManpvmP.png",
+            "http://i.imgur.com/wnl8bSg.jpg",
+            "http://i.imgur.com/1pvaI8X.jpg"
         )
 
         val videoUrl = arrayOf(

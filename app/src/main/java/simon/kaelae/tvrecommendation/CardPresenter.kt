@@ -1,4 +1,4 @@
-package dev.thematrix.tvhk
+package simon.kaelae.tvrecommendation
 
 import android.graphics.drawable.Drawable
 import android.util.Log

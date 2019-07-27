@@ -20,22 +20,9 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         super.onCreate(savedInstanceState)
 
         val (id, title, _, _, videoUrl, func) = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
-        var inreview = "yes"
-        val sharedPreference = context?.getSharedPreferences("inreview", Activity.MODE_PRIVATE)
-        inreview = sharedPreference?.getString("inreview","yes")!!
-        if(inreview == "yes") {
-            Toast.makeText(context, "WARNING:May contain old video quality that aspect ratio may not fit screen", Toast.LENGTH_LONG).show()
-        }else{
-
-        }
-
         setUpPlayer()
         setUpNetwork()
-
         prepareVideo(id, title, videoUrl, func)
-
-
-
 
     }
 
@@ -59,7 +46,6 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         hideControlsOverlay(false)
         mTransportControlGlue.isSeekEnabled = false
 
-        toast = Toast.makeText(context, "", Toast.LENGTH_LONG)
     }
 
     private fun setUpNetwork(){
@@ -125,7 +111,6 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 url = "https://api.viu.now.com/p8/2/getLiveURL"
 
                 params.put("channelno", "099")
-
                 params.put("deviceId", "AndroidTV")
                 params.put("deviceType", "5")
             }else{

@@ -8,28 +8,18 @@ import androidx.leanback.app.BrowseFragment
 import androidx.leanback.widget.*
 
 class MainFragment : BrowseFragment() {
-    var inreview = "yes"
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val sharedPreference = this.getActivity().getSharedPreferences("inreview", MODE_PRIVATE);
-        inreview = sharedPreference.getString("inreview", "yes")!!
         setupUIElements()
-
         loadRows()
-
         setupEventListeners()
-
-
-
     }
 
     private fun setupUIElements() {
         title = getString(R.string.app_name)
-
         showTitle(true)
-        //badgeDrawable = activity.resources.getDrawable(R.drawable.transparentbanner)
-//        headersState = BrowseFragment.HEADERS_HIDDEN
-//        isHeadersTransitionOnBackEnabled = false
+
     }
 
     private fun loadRows() {
@@ -37,25 +27,15 @@ class MainFragment : BrowseFragment() {
         val cardPresenter = CardPresenter()
 
         val listRowAdapter = ArrayObjectAdapter(cardPresenter)
-
-
         val listRowAdapter2 = ArrayObjectAdapter(cardPresenter)
-
+        val listRowAdapter3 = ArrayObjectAdapter(cardPresenter)
 
         listRowAdapter.add(MovieList.list[1])
         listRowAdapter.add(MovieList.list[2])
-
-        if (inreview == "yes") {
-
-        } else {
-            listRowAdapter.add(MovieList.list[0])
-        }
-
+        listRowAdapter.add(MovieList.list[0])
         listRowAdapter2.add(MovieList.list[4])
         listRowAdapter2.add(MovieList.list[5])
         listRowAdapter2.add(MovieList.list[3])
-        val listRowAdapter3 = ArrayObjectAdapter(cardPresenter)
-
         listRowAdapter3.add(MovieList.list[6])
         listRowAdapter3.add(MovieList.list[7])
 

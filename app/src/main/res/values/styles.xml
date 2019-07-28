@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="@style/Theme.Leanback"/>
+    <style name="mytheme" parent="@style/Theme.AppCompat">
+    </style>
 
     <style name="Widget.PictureInPicture.MovieView" parent="android:Widget">
         <item name="android:src">@null</item>

@@ -69,7 +69,7 @@ class DefaultChannelRecommendationJobService : JobService() {
     val defaultChannelId = loadDefaultChannelId()
 
     var newOrderList = MovieList.list
-    newOrderList = listOf<Movie>(MovieList.list[1],MovieList.list[4],MovieList.list[2],MovieList.list[3],MovieList.list[6],MovieList.list[7],MovieList.list[0],MovieList.list[5])
+    newOrderList = listOf<Movie>(MovieList.list[1],MovieList.list[4],MovieList.list[2],MovieList.list[5],MovieList.list[6],MovieList.list[7],MovieList.list[0],MovieList.list[3])
 
  //   newOrderList = listOf<Movie>(MovieList.list[1],MovieList.list[4],MovieList.list[2],MovieList.list[5],MovieList.list[0],MovieList.list[3],MovieList.list[6],MovieList.list[7])
 

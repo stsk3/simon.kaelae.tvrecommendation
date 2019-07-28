@@ -11,8 +11,8 @@ android {
         applicationId "simon.kaelae.tvrecommendation"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 8
-        versionName "8"
+        versionCode 9
+        versionName "9"
         buildConfigField("String", "APP_SCHEME", "\"${APP_SCHEME}\"")
         buildConfigField("String", "AUTHORITY", "\"${AUTHORITY}\"")
     }
@@ -41,5 +41,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:17.0.1'
     implementation 'com.google.firebase:firebase-messaging:19.0.1'
     implementation 'com.squareup.picasso:picasso:2.5.2'
+
 }
 apply plugin: 'com.google.gms.google-services'

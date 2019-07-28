@@ -19,7 +19,6 @@ class MainFragment : BrowseFragment() {
     private fun setupUIElements() {
         title = getString(R.string.app_name)
         showTitle(true)
-
     }
 
     private fun loadRows() {
@@ -29,6 +28,7 @@ class MainFragment : BrowseFragment() {
         val listRowAdapter = ArrayObjectAdapter(cardPresenter)
         val listRowAdapter2 = ArrayObjectAdapter(cardPresenter)
         val listRowAdapter3 = ArrayObjectAdapter(cardPresenter)
+
 
         listRowAdapter.add(MovieList.list[1])
         listRowAdapter.add(MovieList.list[2])
@@ -44,9 +44,11 @@ class MainFragment : BrowseFragment() {
         val header2 = HeaderItem(1, "i-Cable")
         val header3 = HeaderItem(2, "RTHK")
 
+
         rowsAdapter.add(ListRow(header, listRowAdapter))
         rowsAdapter.add(ListRow(header2, listRowAdapter2))
         rowsAdapter.add(ListRow(header3, listRowAdapter3))
+
 
         adapter = rowsAdapter
     }

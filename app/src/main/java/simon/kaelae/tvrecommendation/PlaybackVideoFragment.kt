@@ -20,10 +20,11 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         super.onCreate(savedInstanceState)
 
         val (id, title, _, _, videoUrl, func) = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
+
         setUpPlayer()
         setUpNetwork()
-        prepareVideo(id, title, videoUrl, func)
 
+        prepareVideo(id, title, videoUrl, func)
     }
 
     override fun onPause() {
@@ -31,10 +32,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         mTransportControlGlue.pause()
     }
 
-
     private fun setUpPlayer(){
-
-
         playerAdapter = MediaPlayerAdapter(activity)
         playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE)
         mTransportControlGlue = PlaybackTransportControlGlue(activity, playerAdapter)
@@ -46,6 +44,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         hideControlsOverlay(false)
         mTransportControlGlue.isSeekEnabled = false
 
+        toast = Toast.makeText(context, "", Toast.LENGTH_LONG)
     }
 
     private fun setUpNetwork(){
@@ -84,37 +83,41 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         prepareVideo(item.id, item.title, item.videoUrl, item.func)
     }
 
-    private fun prepareVideo(id: Int, title: String, videoUrl: String, func: String){
-        currentVideoID = id
+    fun prepareVideo(id: Int, title: String, videoUrl: String, func: String){
+        if(id != currentVideoID){
+            currentVideoID = id
 
-        if(videoUrl.equals("")){
-            getVideoUrl(title, func)
-        }else{
-            playVideo(title, videoUrl)
+            if(videoUrl.equals("")){
+                getVideoUrl(title, func)
+            }else{
+                playVideo(title, videoUrl)
+            }
         }
     }
 
     fun playVideo(title: String, videoUrl: String) {
         mTransportControlGlue.title = title
-        playerAdapter.setDataSource(Uri.parse(videoUrl))
+        playerAdapter.setDataSource(Uri.parse(handleUrl(videoUrl)))
         mTransportControlGlue.playWhenPrepared()
     }
 
     private fun getVideoUrl(title: String, ch: String) {
         requestQueue.cancelAll(this)
 
+        lateinit var url: String
+
         if(ch.equals("viutv99") || ch.equals("nowtv332") || ch.equals("nowtv331")){
-            var url = ""
             val params = JSONObject()
 
             if(ch.equals("viutv99")){
-                url = "https://api.viu.now.com/p8/2/getLiveURL"
+                url = handleUrl("https://api.viu.now.com/p8/2/getLiveURL")
 
                 params.put("channelno", "099")
+
                 params.put("deviceId", "AndroidTV")
                 params.put("deviceType", "5")
             }else{
-                url = "https://hkt-mobile-api.nowtv.now.com/09/1/getLiveURL"
+                url = handleUrl("https://hkt-mobile-api.nowtv.now.com/09/1/getLiveURL")
 
                 if(ch.equals("nowtv332")){
                     params.put("channelno", "332")
@@ -135,14 +138,15 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 params,
                 Response.Listener { response ->
                     try {
-                        playVideo(title, JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString())
+                        url = JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString()
+
+                        playVideo(title, url)
                     }catch (exception: Exception){
-                        toast.setText(title + " 暫時未能播放，請稍候再試。")
-                        toast.show()
-                        channelSwitch(lastDirection, false)
+                        showPlaybackErrorMessage(title)
                     }
                 },
                 Response.ErrorListener{ error ->
+                    showPlaybackErrorMessage(title)
                 }
             )
 
@@ -150,19 +154,20 @@ class PlaybackVideoFragment : VideoSupportFragment() {
 
             requestQueue.add(jsonObjectRequest)
         }else if(ch.equals("cabletv109") || ch.equals("cabletv110")){
+            url = handleUrl("https://mobileapp.i-cable.com/iCableMobile/API/api.php")
+
             val stringRequest = object: StringRequest(
                 Method.POST,
-                "https://mobileapp.i-cable.com/iCableMobile/API/api.php",
+                url,
                 Response.Listener { response ->
                     try {
                         playVideo(title, JSONObject(JSONObject(response).get("result").toString()).get("stream").toString())
                     }catch (exception: Exception){
-                        toast.setText(title + " 暫時未能播放，請稍候再試。")
-                        toast.show()
-                        channelSwitch(lastDirection, false)
+                        showPlaybackErrorMessage(title)
                     }
                 },
                 Response.ErrorListener{ error ->
+                    showPlaybackErrorMessage(title)
                 }
             ){
                 override fun getRetryPolicy(): RetryPolicy {
@@ -213,8 +218,23 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         }
     }
 
+    private fun handleUrl(url: String): String{
+        if(SDK_VER < 21){
+            return url.replace("https://", "http://")
+        }else{
+            return url
+        }
+    }
+
+    private fun showPlaybackErrorMessage(title: String){
+        toast.setText(title + " 暫時未能播放，請稍候再試。")
+        toast.show()
+        channelSwitch(lastDirection, false)
+    }
+
     companion object {
-        private var currentVideoID = -1
+        private val SDK_VER = android.os.Build.VERSION.SDK_INT
+        var currentVideoID = -1
         private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
         private lateinit var playerAdapter: MediaPlayerAdapter
         private lateinit var requestQueue: RequestQueue

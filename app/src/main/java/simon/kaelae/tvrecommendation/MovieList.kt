@@ -57,8 +57,8 @@ object MovieList {
             "http://media.fantv.hk/m3u8/archive/channel2.m3u8",
             "",
             "",
-            "https://www.rthk.hk/feeds/dtt/rthktv31_https.m3u8",
-            "https://www.rthk.hk/feeds/dtt/rthktv32_https.m3u8"
+            "https://rthklive1-lh.akamaihd.net/i/rthk31_1@167495/index_2052_av-b.m3u8",
+            "https://rthklive2-lh.akamaihd.net/i/rthk32_1@168450/index_2052_av-b.m3u8"
         )
 
         val func = arrayOf(

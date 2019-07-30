@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:padding="4dp"
+              android:orientation="vertical">
+    <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="頻道自訂名稱"
+            android:inputType="text"/>
+
+    <EditText
+            android:id="@+id/url"
+            android:textSize="12sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="URL(如http://media.fantv.hk/m3u8/archive/channel2.m3u8)"
+            android:inputType="text"/>
+
+</LinearLayout>

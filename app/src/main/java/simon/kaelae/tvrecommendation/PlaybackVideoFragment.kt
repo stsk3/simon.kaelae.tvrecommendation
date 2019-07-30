@@ -84,7 +84,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     }
 
     fun prepareVideo(id: Int, title: String, videoUrl: String, func: String){
-        if(id != currentVideoID){
+
             currentVideoID = id
 
             if(videoUrl.equals("")){
@@ -92,7 +92,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             }else{
                 playVideo(title, videoUrl)
             }
-        }
+
     }
 
     fun playVideo(title: String, videoUrl: String) {
@@ -139,7 +139,6 @@ class PlaybackVideoFragment : VideoSupportFragment() {
                 Response.Listener { response ->
                     try {
                         url = JSONArray(JSONObject(JSONObject(response.get("asset").toString()).get("hls").toString()).get("adaptive").toString()).get(0).toString()
-
                         playVideo(title, url)
                     }catch (exception: Exception){
                         showPlaybackErrorMessage(title)

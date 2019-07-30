@@ -2,12 +2,16 @@ package simon.kaelae.tvrecommendation
 
 import android.graphics.drawable.Drawable
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
 import kotlin.properties.Delegates
+import android.view.View.OnLongClickListener
+import android.widget.Toast
+
 
 class CardPresenter : Presenter() {
     private var mDefaultCardImage: Drawable? = null
@@ -49,6 +53,8 @@ class CardPresenter : Presenter() {
                 .error(mDefaultCardImage)
                 .into(cardView.mainImageView)
         }
+
+
     }
 
     override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {

@@ -3,9 +3,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
     <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_margin="30sp"
-            android:text="切換到手機界面"
-    android:id="@+id/tophone"/>
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="30sp"
+            android:layout_marginBottom="30sp"
+            android:text="切換手機界面"
+            android:id="@+id/tophone"/>
+    <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginLeft="30sp"
+            android:layout_above="@+id/tophone"
+            android:text="新增自定片源"
+            android:id="@+id/custom_video"/>
     <fragment
             android:id="@+id/main_browse_fragment"
             android:name="simon.kaelae.tvrecommendation.MainFragment"

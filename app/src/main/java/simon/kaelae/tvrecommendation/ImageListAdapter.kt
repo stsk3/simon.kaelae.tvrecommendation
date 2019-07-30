@@ -1,17 +1,26 @@
 package simon.kaelae.tvrecommendation
 
-import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 
-internal class ImageListAdapter internal constructor(context: Context, private val resource: Int, private val itemList: Array<String>?) : ArrayAdapter<ImageListAdapter.ItemHolder>(context, resource) {
+internal class ImageListAdapter internal constructor(
+    context: Context,
+    private val resource: Int,
+    private val itemList: MutableList<String>?
+) : ArrayAdapter<ImageListAdapter.ItemHolder>(context, resource) {
     internal var cardImageUrl = arrayOf(
         Uri.parse("http://i.imgur.com/xTtwwzS.jpg"),
         Uri.parse("http://i.imgur.com/ucm7n4h.jpg"),
@@ -25,6 +34,7 @@ internal class ImageListAdapter internal constructor(context: Context, private v
 
 
     )
+
     override fun getCount(): Int {
         return if (this.itemList != null) this.itemList.size else 0
     }
@@ -39,16 +49,35 @@ internal class ImageListAdapter internal constructor(context: Context, private v
             holder.name = convertView!!.findViewById(R.id.textView)
             holder.icon = convertView.findViewById(R.id.icon)
 
-            Picasso.with(context).load(cardImageUrl[position]).into(holder.icon);
+            try {
+                Picasso.with(context).load(cardImageUrl[position]).into(holder.icon);
+            } catch (e: Exception) {
 
+            }
             convertView.tag = holder
         } else {
             holder = convertView.tag as ItemHolder
         }
 
-        holder.name!!.text = this.itemList!![position]
-        Picasso.with(context).load(cardImageUrl[position]).into(holder.icon);
+        if (position > 8) {
 
+            holder.name!!.text = this.itemList!![position]
+            try {
+                Picasso.with(context).load("https://i.imgur.com/XQnIwzp.png").into(holder.icon);
+            } catch (e: Exception) {
+
+            }
+
+
+        } else {
+
+            holder.name!!.text = this.itemList!![position]
+            try {
+                Picasso.with(context).load(cardImageUrl[position]).into(holder.icon);
+            } catch (e: Exception) {
+
+            }
+        }
         return convertView
     }
 

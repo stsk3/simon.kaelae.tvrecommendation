@@ -28,6 +28,8 @@ import kotlinx.android.synthetic.main.phone_layout.*
 
 class MainActivity : Activity() {
 
+    var Local_ver = BuildConfig.VERSION_CODE
+    var Cloud_ver = BuildConfig.VERSION_CODE
 
     var fblink = Uri.parse("https://www.facebook.com/androidtvhk")
     var title = mutableListOf(
@@ -45,78 +47,15 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this@MainActivity)
+        val database = FirebaseDatabase.getInstance()
         val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
         sharedPreference.getString("layout", "")
-
-
         if (isTV() || sharedPreference.getString("layout", "") == "TV") {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             setTheme(R.style.AppTheme)
             setContentView(R.layout.activity_main)
-
-            val switchlayout = findViewById<Button>(R.id.tophone)
-            switchlayout.setOnClickListener(object : View.OnClickListener {
-                override fun onClick(v: View?) {
-                    val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
-                    var editor = sharedPreference.edit()
-                    editor.putString("layout", "phone")
-                    editor.apply()
-
-                    recreate();
-
-                }
-            })
-
-            val add_customsource = findViewById<Button>(R.id.custom_video)
-            add_customsource.setOnClickListener(object : View.OnClickListener {
-                override fun onClick(v: View?) {
-                    AlertDialog.Builder(this@MainActivity, R.style.Theme_AppCompat).apply {
-                        val dialogView = this@MainActivity.layoutInflater.inflate(R.layout.dialog_new_category, null)
-
-
-                        setView(dialogView)
-
-                        setTitle("新增影片來源")
-                        setMessage("輸入名稱及影片網址")
-
-                        setPositiveButton("Save") { _, _ ->
-                            if(dialogView.findViewById<EditText>(R.id.url).text.toString() == ""){
-                                Toast.makeText(this@MainActivity,"串流網止不可留空",Toast.LENGTH_SHORT).show()
-                            }else {
-                                val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
-                                var editor = sharedPreference.edit()
-
-                                val original_name = sharedPreference.getString("name", "")
-                                val original_url = sharedPreference.getString("url", "")
-
-
-                                var new_name =
-                                    original_name + "`" + dialogView.findViewById<EditText>(R.id.name).text.toString()
-                                var new_url =
-                                    original_url + "`" + dialogView.findViewById<EditText>(R.id.url).text.toString()
-
-                                editor.putString("name", new_name)
-                                editor.putString("url", new_url)
-                                editor.apply()
-
-                                recreate();
-                            }
-                        }
-
-                        setNegativeButton("Cancel") { _, _ ->
-                            //pass
-                        }
-                        setNeutralButton("編輯自訂台") { _, _ ->
-                            val intent = Intent(this@MainActivity, TVshowlist::class.java)
-                            startActivity(intent)
-                        }
-
-                    }.create().show()
-                }
-            })
-
         } else {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
             setTheme(R.style.mytheme)
             setContentView(R.layout.phone_layout)
             val gridview = findViewById<GridView>(R.id.gridview)
@@ -130,7 +69,6 @@ class MainActivity : Activity() {
 
                 for (i in  0 until sharedPreference.getString("name", "")!!.split("`").size) {
                     title.add(sharedPreference.getString("name", "")!!.split("`")[i])
-
                 }
                 title.removeAt(9)
             }
@@ -188,65 +126,12 @@ class MainActivity : Activity() {
                 true
             })
 
-
-            val addsource = findViewById<Button>(R.id.addsource)
-
-            addsource.setOnClickListener(object : View.OnClickListener {
+            val setting = findViewById<Button>(R.id.setting)
+            setting.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(v: View?) {
-
-                    AlertDialog.Builder(this@MainActivity, R.style.AppTheme).apply {
-                        val dialogView = this@MainActivity.layoutInflater.inflate(R.layout.dialog_new_category, null)
-
-
-                        setView(dialogView)
-
-                        setTitle("新增影片來源")
-                        setMessage("輸入名稱及影片網址")
-
-                        setPositiveButton("Save") { _, _ ->
-                            if(dialogView.findViewById<EditText>(R.id.url).text.toString() == ""){
-                                Toast.makeText(this@MainActivity,"串流網止不可留空",Toast.LENGTH_SHORT).show()
-                            }else{
-                                val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
-                                var editor = sharedPreference.edit()
-
-                                val original_name = sharedPreference.getString("name","")
-                                val original_url= sharedPreference.getString("url","")
-
-
-                                var new_name = original_name+"`"+dialogView.findViewById<EditText>(R.id.name).text.toString()
-                                var new_url = original_url+"`"+dialogView.findViewById<EditText>(R.id.url).text.toString()
-
-                                editor.putString("name", new_name)
-                                editor.putString("url", new_url)
-                                editor.apply()
-
-                                recreate();
-                            }
-
-                        }
-
-                        setNegativeButton("Cancel") { _, _ ->
-                            //pass
-                        }
-
-                    }.create().show()
                 }
             })
 
-            val switchlayout = findViewById<Button>(R.id.toTV)
-            switchlayout.setOnClickListener(object : View.OnClickListener {
-                override fun onClick(v: View?) {
-                    val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
-                    var editor = sharedPreference.edit()
-                    editor.putString("layout", "TV")
-                    editor.apply()
-
-                    recreate();
-                }
-            })
-
-            val database = FirebaseDatabase.getInstance()
             val notice = findViewById<TextView>(R.id.notice)
             database.getReference("notice").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -269,8 +154,24 @@ class MainActivity : Activity() {
                 }
             })
         }
+        database.getReference("version").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                Cloud_ver = dataSnapshot.getValue(Int::class.java) as Int
+                if (Local_ver < Cloud_ver) {
+                    Toast.makeText(this@MainActivity,"發現更新，請到設定下載",Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        val setting = findViewById<Button>(R.id.setting)
+        setting.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                val intent = Intent(this@MainActivity, Setting::class.java)
+                startActivity(intent)
 
-
+            }
+        })
         try {
             DefaultChannelRecommendationJobService.startJob(this)
         } catch (e: Exception) {
@@ -281,19 +182,13 @@ class MainActivity : Activity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-    }
 
     private fun showMovie() {
-
         Log.d("MainActivity", "url:${intent.data.toString()}")
         val id: String? = intent.data?.getQueryParameter(PROGRAM_QUERY)
         id ?: return
         val movie = MovieList.list.find { it.id == id.toInt() }
         val intent = Intent(this, PlaybackActivity::class.java)
-
         intent.putExtra(DetailsActivity.MOVIE, movie)
         startActivity(intent)
     }
@@ -302,30 +197,18 @@ class MainActivity : Activity() {
         return packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
     }
 
-
     fun removeSharePreference(i: Int){
-
-
         val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
         var editor = sharedPreference.edit()
-
         val original_name:MutableList<String> = sharedPreference.getString("name","")?.split("`")!!.toMutableList()
         original_name.removeAt(i)
         val original_name_string = original_name.joinToString (separator = "`")
-
-
-
         val original_url:MutableList<String> = sharedPreference.getString("url","")?.split("`")!!.toMutableList()
         original_url.removeAt(i)
         val original_url_string = original_url.joinToString (separator = "`")
-
-
-
         editor.putString("name", original_name_string)
-
         editor.putString("url", original_url_string)
         editor.apply()
-
         recreate();
     }
 

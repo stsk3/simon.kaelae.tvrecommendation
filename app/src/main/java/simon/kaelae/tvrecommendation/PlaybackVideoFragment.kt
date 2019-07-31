@@ -1,6 +1,10 @@
 package simon.kaelae.tvrecommendation
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -96,9 +100,35 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     }
 
     fun playVideo(title: String, videoUrl: String) {
-        mTransportControlGlue.title = title
-        playerAdapter.setDataSource(Uri.parse(handleUrl(videoUrl)))
-        mTransportControlGlue.playWhenPrepared()
+//        mTransportControlGlue.title = title
+//        playerAdapter.setDataSource(Uri.parse(handleUrl(videoUrl)))
+//        mTransportControlGlue.playWhenPrepared()
+        try {
+
+            var myClipboard = context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            var myClip: ClipData = ClipData.newPlainText("note_copy", videoUrl)
+            myClipboard.setPrimaryClip(myClip)
+            Toast.makeText(context, "已複製播放網址到剪貼簿", Toast.LENGTH_SHORT).show()
+        }catch (e: java.lang.Exception){}
+        val sharedPreference = activity?.getSharedPreferences("layout", Context.MODE_PRIVATE)
+        if (sharedPreference?.getString("player", "originalplayer") == "originalplayer") {
+            mTransportControlGlue.title = title
+            playerAdapter.setDataSource(Uri.parse(handleUrl(videoUrl)))
+            mTransportControlGlue.playWhenPrepared()
+        }else{
+
+
+        try {
+            val playIntent: Intent = Uri.parse(handleUrl(videoUrl)).let { uri ->
+                Intent(Intent.ACTION_VIEW, uri)
+            }
+            startActivity(playIntent)
+        }catch (e: java.lang.Exception){
+            //Toast.makeText(context?.applicationContext,"沒有播放器，建議安裝MX PLAYER",Toast.LENGTH_SHORT).show()
+            mTransportControlGlue.title = title
+            playerAdapter.setDataSource(Uri.parse(handleUrl(videoUrl)))
+            mTransportControlGlue.playWhenPrepared()
+        }}
     }
 
     private fun getVideoUrl(title: String, ch: String) {

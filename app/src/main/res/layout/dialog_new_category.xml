@@ -19,5 +19,15 @@
             android:layout_height="wrap_content"
             android:hint="URL(如http://media.fantv.hk/m3u8/archive/channel2.m3u8)"
             android:inputType="text"/>
+    <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/playerchoiceradiogroup">
+        <RadioButton android:padding="8sp" android:layout_width="match_parent" android:layout_height="wrap_content"
+                     android:id="@+id/originalplayer" android:text="內置播放器 : 電視支援轉台，電視建議使用。手機Android 8.0+支援Picture-in-Picture"/>
 
+        <RadioButton android:padding="8sp" android:layout_width="match_parent" android:layout_height="wrap_content"
+                     android:id="@+id/selfplayer" android:text="自選播放器(用自選播放器如Mx Player會失去電視轉台功能。Mx Player其實也有Picture-in-Picture功能，手機建議使用，部分自選播放器有機會有廣告)"/>
+
+    </RadioGroup>
 </LinearLayout>

@@ -11,8 +11,8 @@ android {
         applicationId "simon.kaelae.tvrecommendation"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 10
-        versionName "10"
+        versionCode 11
+        versionName "11"
         buildConfigField("String", "APP_SCHEME", "\"${APP_SCHEME}\"")
         buildConfigField("String", "AUTHORITY", "\"${AUTHORITY}\"")
     }

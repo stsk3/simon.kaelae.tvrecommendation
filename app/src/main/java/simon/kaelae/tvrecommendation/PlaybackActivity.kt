@@ -1,9 +1,7 @@
 package simon.kaelae.tvrecommendation
 
-import android.app.Activity
 import android.app.PictureInPictureParams
 import android.content.Context
-import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
@@ -11,17 +9,17 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 
 
 class PlaybackActivity : FragmentActivity() {
-    var id:Int = -1
+    var id: Int = -1
     var shortPress = false
     var longPress = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         //id = intent.getIntExtra("id",0)
         //Toast.makeText(this, channe_id.toString(), Toast.LENGTH_LONG).show()
     }
@@ -31,17 +29,20 @@ class PlaybackActivity : FragmentActivity() {
     }
 
     override fun onUserLeaveHint() {
+        val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
 
-        if (isTV() || android.os.Build.VERSION.SDK_INT <= 25) {
-            Toast.makeText(this, "no PIP", Toast.LENGTH_LONG).show()
-        } else {
-            try {
 
-                val params = PictureInPictureParams.Builder()
-                    .build()
-                enterPictureInPictureMode(params)
-            } catch (e: Exception) {
-                Toast.makeText(this, "Picture-in-picture mode error", Toast.LENGTH_LONG).show()
+        if (sharedPreference.getString("player", "originalplayer") == "originalplayer") {
+            if (isTV() || android.os.Build.VERSION.SDK_INT <= 25) {
+                Toast.makeText(this, "no PIP", Toast.LENGTH_LONG).show()
+            } else {
+                try {
+                    val params = PictureInPictureParams.Builder()
+                        .build()
+                    enterPictureInPictureMode(params)
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Picture-in-picture mode error", Toast.LENGTH_LONG).show()
+                }
             }
         }
 
@@ -62,20 +63,18 @@ class PlaybackActivity : FragmentActivity() {
 
     override fun onResume() {
         super.onResume()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(android.R.id.content, PlaybackVideoFragment())
+            .commit()
 
-
-            supportFragmentManager
-                .beginTransaction()
-                .replace(android.R.id.content, PlaybackVideoFragment())
-                .commit()
-
-            val decorView = window.decorView
-            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        val decorView = window.decorView
+        decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -97,9 +96,10 @@ class PlaybackActivity : FragmentActivity() {
 
         }
     }
+
     override fun onStop() {
         super.onStop()
-       //Toast.makeText(this, "onstop", Toast.LENGTH_LONG).show()
+        //Toast.makeText(this, "onstop", Toast.LENGTH_LONG).show()
         this.finish()
     }
 
@@ -162,9 +162,8 @@ class PlaybackActivity : FragmentActivity() {
             event.keyCode == KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT
         ) {
             direction = "NEXT"
-        }
-        else {
-           // Toast.makeText(this, direction, Toast.LENGTH_LONG).show()
+        } else {
+            // Toast.makeText(this, direction, Toast.LENGTH_LONG).show()
 
             return super.dispatchKeyEvent(event)
         }

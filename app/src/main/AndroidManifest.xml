@@ -47,8 +47,8 @@
             </intent-filter>
         </activity>
         <activity android:name="simon.kaelae.tvrecommendation.DetailsActivity"/>
-        <activity android:name="simon.kaelae.tvrecommendation.TVshowlist"
-                  android:screenOrientation="landscape"/>
+        <activity android:name="simon.kaelae.tvrecommendation.TVshowlist"/>
+        <activity android:name="simon.kaelae.tvrecommendation.Setting"/>
         <activity android:name="simon.kaelae.tvrecommendation.PlaybackActivity"
                   android:screenOrientation="landscape"
                   android:resizeableActivity="true"

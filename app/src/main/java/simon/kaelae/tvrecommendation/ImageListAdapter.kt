@@ -1,5 +1,6 @@
 package simon.kaelae.tvrecommendation
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
@@ -62,10 +63,11 @@ internal class ImageListAdapter internal constructor(
         if (position > 8) {
 
             holder.name!!.text = this.itemList!![position]
+            val sharedPreference = context.getSharedPreferences("layout", Activity.MODE_PRIVATE)
             try {
-                Picasso.with(context).load("https://i.imgur.com/XQnIwzp.png").into(holder.icon);
+                Picasso.with(context).load(sharedPreference.getString("logo","")).into(holder.icon);
             } catch (e: Exception) {
-
+                Picasso.with(context).load("https://i.imgur.com/XQnIwzp.png").into(holder.icon);
             }
 
 

@@ -7,27 +7,29 @@
               android:orientation="vertical">
     <EditText
             android:id="@+id/name"
+            android:textColor="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="頻道自訂名稱"
-            android:inputType="text"/>
+            android:hint="頻道自訂名稱支援批量加入，每個項目請以逗號(,)分隔"
+            android:inputType="textMultiLine"/>
 
     <EditText
             android:id="@+id/url"
-            android:textSize="12sp"
+            android:textColor="#FFFFFF"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="URL(如http://media.fantv.hk/m3u8/archive/channel2.m3u8)"
-            android:inputType="text"/>
+            android:layout_height="120sp"
+            android:textSize="14sp"
+            android:hint="串流URL(例如http://media.fantv.hk/m3u8/archive/channel2.m3u8)\n支援批量加入，每條Link請以逗號(,)分隔"
+            android:inputType="textMultiLine"/>
     <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/playerchoiceradiogroup">
         <RadioButton android:padding="8sp" android:layout_width="match_parent" android:layout_height="wrap_content"
-                     android:id="@+id/originalplayer" android:text="內置播放器 : 電視支援轉台，電視建議使用。手機Android 8.0+支援Picture-in-Picture"/>
+                     android:id="@+id/originalplayer" android:text="內置播放器 : 電視建議使用\n電視支援轉台。手機Android 8.0+支援Picture-in-Picture。無廣告"/>
 
         <RadioButton android:padding="8sp" android:layout_width="match_parent" android:layout_height="wrap_content"
-                     android:id="@+id/selfplayer" android:text="自選播放器(用自選播放器如Mx Player會失去電視轉台功能。Mx Player其實也有Picture-in-Picture功能，手機建議使用，部分自選播放器有機會有廣告)"/>
+                     android:id="@+id/selfplayer" android:text="自選播放器 : 手機建議使用(建議安裝MxPlayer)\n用自選播放器會失去轉台功能。Mx Player也有Picture-in-Picture功能。部分自選播放器有機會有廣告)"/>
 
     </RadioGroup>
 </LinearLayout>

@@ -9,10 +9,10 @@ android {
     buildToolsVersion "29.0.1"
     defaultConfig {
         applicationId "simon.kaelae.tvrecommendation"
-        minSdkVersion 21
+        minSdkVersion 17
         targetSdkVersion 29
-        versionCode 11
-        versionName "11"
+        versionCode 13
+        versionName "13"
         buildConfigField("String", "APP_SCHEME", "\"${APP_SCHEME}\"")
         buildConfigField("String", "AUTHORITY", "\"${AUTHORITY}\"")
     }

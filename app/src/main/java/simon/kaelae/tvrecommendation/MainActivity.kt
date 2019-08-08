@@ -41,7 +41,7 @@ class MainActivity : Activity() {
         "有線直播台\n ",
         "港台電視31\n ",
         "港台電視32\n ",
-        "更新消息請留意Facebook專頁"
+        "AndroidTV 教室\n "
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,13 +64,15 @@ class MainActivity : Activity() {
 
             if (sharedPreference.getString("name", "") == "") {
             } else {
-                //.makeText(this@MainActivity,sharedPreference.getString("name", "")!!.split("`")[1],Toast.LENGTH_SHORT).show()
-                //Toast.makeText(this@MainActivity,sharedPreference.getString("name", "")!!.split("`").size.toString(),Toast.LENGTH_SHORT).show()
+                //.makeText(this@MainActivity,sharedPreference.getString("name", "")!!.split(",")[1],Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this@MainActivity,sharedPreference.getString("name", "")!!.split(",").size.toString(),Toast.LENGTH_SHORT).show()
 
-                for (i in  0 until sharedPreference.getString("name", "")!!.split("`").size) {
-                    title.add(sharedPreference.getString("name", "")!!.split("`")[i])
+                for (i in  0 until sharedPreference.getString("name", "")!!.split(",").size) {
+                    title.add(sharedPreference.getString("name", "")!!.split(",")[i])
                 }
                 title.removeAt(9)
+
+
             }
 
             val adapter = ImageListAdapter(this, R.layout.grid_cell, title)
@@ -88,10 +90,10 @@ class MainActivity : Activity() {
                     val intent = Intent(this, PlaybackActivity::class.java)
                     val movie = Movie(
                         id.toInt(),
-                        title = sharedPreference.getString("name", "")!!.split("`")[position-8],
+                        title = sharedPreference.getString("name", "")!!.split(",")[position-8],
                         description = "",
                         cardImageUrl = "",
-                        videoUrl = sharedPreference.getString("url", "")!!.split("`")[position-8],
+                        videoUrl = sharedPreference.getString("url", "")!!.split(",")[position-8],
                         func = ""
                     )
                     intent.putExtra(DetailsActivity.MOVIE, movie)
@@ -107,7 +109,7 @@ class MainActivity : Activity() {
             gridview.setOnItemLongClickListener(OnItemLongClickListener { arg0, arg1, position, arg3 ->
 
                 if(position>8){
-                    //Toast.makeText(this@MainActivity,sharedPreference.getString("url", "")!!.split("`")[position-8],Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this@MainActivity,sharedPreference.getString("url", "")!!.split(",")[position-8],Toast.LENGTH_SHORT).show()
 
                     lateinit var dialog:AlertDialog
                     val builder = AlertDialog.Builder(this)
@@ -184,13 +186,30 @@ class MainActivity : Activity() {
 
 
     private fun showMovie() {
-        Log.d("MainActivity", "url:${intent.data.toString()}")
+        val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
         val id: String? = intent.data?.getQueryParameter(PROGRAM_QUERY)
         id ?: return
-        val movie = MovieList.list.find { it.id == id.toInt() }
-        val intent = Intent(this, PlaybackActivity::class.java)
-        intent.putExtra(DetailsActivity.MOVIE, movie)
-        startActivity(intent)
+        if(id.toInt()<8) {
+            //Toast.makeText(this@MainActivity,id.toInt().toString(),Toast.LENGTH_SHORT).show()
+            val movie = MovieList.list.find { it.id == id.toInt() }
+            val intent = Intent(this, PlaybackActivity::class.java)
+            intent.putExtra(DetailsActivity.MOVIE, movie)
+            startActivity(intent)
+        } else {
+
+            //Toast.makeText(this@MainActivity,id.toInt().toString(),Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, PlaybackActivity::class.java)
+            val movie = Movie(
+                id.toInt(),
+                title = sharedPreference.getString("name", "")!!.split(",")[id.toInt()-7],
+                description = "",
+                cardImageUrl = "",
+                videoUrl = sharedPreference.getString("url", "")!!.split(",")[id.toInt()-7],
+                func = ""
+            )
+            intent.putExtra(DetailsActivity.MOVIE, movie)
+            startActivity(intent)
+        }
     }
 
     private fun isTV(): Boolean {
@@ -200,12 +219,12 @@ class MainActivity : Activity() {
     fun removeSharePreference(i: Int){
         val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
         var editor = sharedPreference.edit()
-        val original_name:MutableList<String> = sharedPreference.getString("name","")?.split("`")!!.toMutableList()
+        val original_name:MutableList<String> = sharedPreference.getString("name","")?.split(",")!!.toMutableList()
         original_name.removeAt(i)
-        val original_name_string = original_name.joinToString (separator = "`")
-        val original_url:MutableList<String> = sharedPreference.getString("url","")?.split("`")!!.toMutableList()
+        val original_name_string = original_name.joinToString (separator = ",")
+        val original_url:MutableList<String> = sharedPreference.getString("url","")?.split(",")!!.toMutableList()
         original_url.removeAt(i)
-        val original_url_string = original_url.joinToString (separator = "`")
+        val original_url_string = original_url.joinToString (separator = ",")
         editor.putString("name", original_name_string)
         editor.putString("url", original_url_string)
         editor.apply()

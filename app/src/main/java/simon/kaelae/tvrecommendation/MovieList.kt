@@ -1,5 +1,7 @@
 package simon.kaelae.tvrecommendation
 
+import android.app.Activity
+
 
 object MovieList {
 
@@ -13,6 +15,7 @@ object MovieList {
     val list: List<Movie> by lazy {
         setupMovies()
     }
+
 
     private var count: Int = 0
 
@@ -34,7 +37,7 @@ object MovieList {
             "",
             "",
             "",
-            "",
+            "Old format video that scale made not fit screen",
             "",
             ""
         )

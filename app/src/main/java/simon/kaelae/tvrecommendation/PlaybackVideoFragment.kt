@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import androidx.leanback.app.VideoSupportFragment
@@ -61,6 +62,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         lastDirection = direction
 
         val list = MovieList.list
+        //val sharedPreference = activity?.getSharedPreferences("layout", Activity.MODE_PRIVATE)
 
         var videoId = currentVideoID
 
@@ -108,7 +110,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             var myClipboard = context!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             var myClip: ClipData = ClipData.newPlainText("note_copy", videoUrl)
             myClipboard.setPrimaryClip(myClip)
-            Toast.makeText(context, "已複製播放網址到剪貼簿", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, "已複製播放網址到剪貼簿", Toast.LENGTH_SHORT).show()
         }catch (e: java.lang.Exception){}
         val sharedPreference = activity?.getSharedPreferences("layout", Context.MODE_PRIVATE)
         if (sharedPreference?.getString("player", "originalplayer") == "originalplayer") {
@@ -124,7 +126,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             }
             startActivity(playIntent)
         }catch (e: java.lang.Exception){
-            //Toast.makeText(context?.applicationContext,"沒有播放器，建議安裝MX PLAYER",Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context?.applicationContext,"沒有播放器，建議安裝Mx Player，改用內置播放器",Toast.LENGTH_SHORT).show()
             mTransportControlGlue.title = title
             playerAdapter.setDataSource(Uri.parse(handleUrl(videoUrl)))
             mTransportControlGlue.playWhenPrepared()

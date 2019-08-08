@@ -13,6 +13,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import simon.kaelae.tvrecommendation.recommendation.DefaultChannelRecommendationJobService
 
 
 class Setting : Activity() {
@@ -48,7 +49,7 @@ class Setting : Activity() {
         } else {//phone
             switch = "切換成TV版界面"
         }
-        var newlist = mutableListOf<String>(switch, "自定頻道", "選擇播放器", "檢查更新")
+        var newlist = mutableListOf<String>(switch, "自定頻道", "選擇播放器", "檢查更新","重置設定")
 
 
         val lvAdapter = ArrayAdapter<String>(
@@ -71,27 +72,37 @@ class Setting : Activity() {
                 startActivity(intent)
             }
             if (i == 1) {
-                AlertDialog.Builder(this@Setting, R.style.Theme_AppCompat).apply {
+                val dia = AlertDialog.Builder(this@Setting, R.style.Theme_AppCompat).apply {
                     val dialogView = this@Setting.layoutInflater.inflate(R.layout.dialog_new_category, null)
                     dialogView.findViewById<RadioGroup>(R.id.playerchoiceradiogroup).visibility = View.GONE
                      setView(dialogView)
                     setTitle("新增影片來源")
                     setMessage("輸入名稱及影片網址")
                     setPositiveButton("Save") { _, _ ->
-                        if (dialogView.findViewById<EditText>(R.id.url).text.toString() == "") {
-                            Toast.makeText(this@Setting, "串流網止不可留空", Toast.LENGTH_SHORT).show()
-                        } else {
+                        val theURL = dialogView.findViewById<EditText>(R.id.url).text.toString().replace(" ", "")
+                        val theName = dialogView.findViewById<EditText>(R.id.name).text.toString()
+                        if (theURL == ""||theName == "") {
+                            Toast.makeText(this@Setting, "儲存不成功:名稱或網址不可留空", Toast.LENGTH_SHORT).show()
+
+                        } else if(theURL.split(",").size != theName.split(",").size){
+                            Toast.makeText(this@Setting, "儲存不成功:名稱及網址數量不相稱", Toast.LENGTH_SHORT).show()
+
+                        }else{
                             val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
                             var editor = sharedPreference.edit()
                             val original_name = sharedPreference.getString("name", "")
                             val original_url = sharedPreference.getString("url", "")
                             var new_name =
-                                original_name + "`" + dialogView.findViewById<EditText>(R.id.name).text.toString()
+                                original_name + "," + dialogView.findViewById<EditText>(R.id.name).text.toString()
                             var new_url =
-                                original_url + "`" + dialogView.findViewById<EditText>(R.id.url).text.toString()
+                                original_url + "," + dialogView.findViewById<EditText>(R.id.url).text.toString()
                             editor.putString("name", new_name)
                             editor.putString("url", new_url)
                             editor.apply()
+                            try {
+                                DefaultChannelRecommendationJobService.startJob(this@Setting)
+                            } catch (e: Exception) {
+                            }
                             val intent = Intent(this@Setting, MainActivity::class.java)
                             startActivity(intent)
                         }
@@ -103,6 +114,7 @@ class Setting : Activity() {
                         startActivity(intent)
                     }
                 }.create().show()
+
             }
             if (i == 2) {
                 AlertDialog.Builder(this@Setting, R.style.Theme_AppCompat).apply {
@@ -178,10 +190,29 @@ class Setting : Activity() {
 
                 }
             }
+            if (i == 4) {
+                AlertDialog.Builder(this@Setting, R.style.Theme_AppCompat).apply {
+                    val dialogView = this@Setting.layoutInflater.inflate(R.layout.dialog_new_category, null)
+
+                    setView(dialogView)
+                    dialogView.findViewById<EditText>(R.id.name).visibility = View.GONE
+                    dialogView.findViewById<EditText>(R.id.url).visibility = View.GONE
+                    dialogView.findViewById<RadioGroup>(R.id.playerchoiceradiogroup).visibility = View.GONE
+                    setTitle("要刪除所有設定?(會一並刪除所有自定頻道)")
+                    setPositiveButton("確定") { _, _ ->
+                        editor.clear().commit()
+                        Toast.makeText(this@Setting, "已重置", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this@Setting, MainActivity::class.java)
+                        startActivity(intent)
+                    }
+
+                    setNegativeButton("取消") { _, _ ->
+                        //pass
+                    }
+                }.create().show()
+
+            }
         }
     }
 
-    private fun isTV(): Boolean {
-        return packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
-    }
 }

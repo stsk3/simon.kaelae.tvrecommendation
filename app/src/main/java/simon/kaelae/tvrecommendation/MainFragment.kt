@@ -34,7 +34,7 @@ class MainFragment : BrowseFragment() {
     private fun loadRows() {
         val sharedPreference = this.getActivity()?.getSharedPreferences("layout", Context.MODE_PRIVATE)
         sharedPreference?.getString("layout", "")
-        //Toast.makeText(context,sharedPreference.getString("name", "")!!.split("`").size.toString(),Toast.LENGTH_SHORT).show()
+        //Toast.makeText(context,sharedPreference.getString("name", "")!!.split(",").size.toString(),Toast.LENGTH_SHORT).show()
         val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
         val cardPresenter = CardPresenter()
 
@@ -58,12 +58,12 @@ class MainFragment : BrowseFragment() {
         val header3 = HeaderItem(2, "RTHK")
 
 
-        if(sharedPreference?.getString("name", "")!!.split("`").size >1){
+        if(sharedPreference?.getString("name", "")!!.split(",").size >1){
             val listRowAdapter4 = ArrayObjectAdapter(cardPresenter)
-            for (i in  0 until sharedPreference?.getString("name", "")!!.split("`").size) {
+            for (i in  0 until sharedPreference?.getString("name", "")!!.split(",").size) {
                 listRowAdapter4.add(Movie(id= 9,
-                    title = sharedPreference?.getString("name", "")!!.split("`")[i],description="",cardImageUrl="https://i.imgur.com/XQnIwzp.png",
-                    videoUrl= sharedPreference?.getString("url", "")!!.split("`")[i],func=""))
+                    title = sharedPreference?.getString("name", "")!!.split(",")[i],description="",cardImageUrl="https://i.imgur.com/XQnIwzp.png",
+                    videoUrl= sharedPreference?.getString("url", "")!!.split(",")[i],func=""))
             }
             listRowAdapter4.removeItems(0,1)
 

@@ -18,14 +18,14 @@ class TVshowlist : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tvlistview)
         val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
-        val original_name:MutableList<String> = sharedPreference.getString("name","")?.split("`")!!.toMutableList()
+        val original_name:MutableList<String> = sharedPreference.getString("name","")?.split(",")!!.toMutableList()
 
 
-        val original_url:MutableList<String> = sharedPreference.getString("url","")?.split("`")!!.toMutableList()
+        val original_url:MutableList<String> = sharedPreference.getString("url","")?.split(",")!!.toMutableList()
 
 
         var newlist= mutableListOf<String>()
-        for (i in  0 until sharedPreference.getString("name", "")!!.split("`").size) {
+        for (i in  0 until sharedPreference.getString("name", "")!!.split(",").size) {
             newlist.add(original_name[i]+" : "+original_url[i])
 
 
@@ -55,12 +55,12 @@ class TVshowlist : Activity() {
 
         val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
         var editor = sharedPreference.edit()
-        val original_name:MutableList<String> = sharedPreference.getString("name","")?.split("`")!!.toMutableList()
+        val original_name:MutableList<String> = sharedPreference.getString("name","")?.split(",")!!.toMutableList()
         original_name.removeAt(i)
-        val original_name_string = original_name.joinToString (separator = "`")
-        val original_url:MutableList<String> = sharedPreference.getString("url","")?.split("`")!!.toMutableList()
+        val original_name_string = original_name.joinToString (separator = ",")
+        val original_url:MutableList<String> = sharedPreference.getString("url","")?.split(",")!!.toMutableList()
         original_url.removeAt(i)
-        val original_url_string = original_url.joinToString (separator = "`")
+        val original_url_string = original_url.joinToString (separator = ",")
         editor.putString("name", original_name_string)
         editor.putString("url", original_url_string)
         editor.apply()

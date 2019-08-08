@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.SurfaceView
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -16,12 +17,28 @@ class PlaybackActivity : FragmentActivity() {
     var id: Int = -1
     var shortPress = false
     var longPress = false
+    var mVideoSurface: SurfaceView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         //id = intent.getIntExtra("id",0)
         //Toast.makeText(this, channe_id.toString(), Toast.LENGTH_LONG).show()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(android.R.id.content, PlaybackVideoFragment())
+            .commitAllowingStateLoss()
+
+        val decorView = window.decorView
+        decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     private fun isTV(): Boolean {
@@ -57,17 +74,18 @@ class PlaybackActivity : FragmentActivity() {
             // Hide the full-screen UI (controls, etc.) while in picture-in-picture mode.
         } else {
             // Restore the full-screen UI.
-            adjustFullScreen(newConfig)
+            val decorView = window.decorView
+            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
     }
 
     override fun onResume() {
         super.onResume()
-        supportFragmentManager
-            .beginTransaction()
-            .replace(android.R.id.content, PlaybackVideoFragment())
-            .commit()
-
         val decorView = window.decorView
         decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
@@ -76,24 +94,24 @@ class PlaybackActivity : FragmentActivity() {
                 View.SYSTEM_UI_FLAG_FULLSCREEN or
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 
-
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     override fun onPause() {
         super.onPause()
 
         // If called while in PIP mode, do not pause playback
-        if (isInPictureInPictureMode) {
-            // Continue playback
-            //Toast.makeText(this, "onpause", Toast.LENGTH_LONG).show()
-            supportFragmentManager
-                .beginTransaction()
-                .replace(android.R.id.content, PlaybackVideoFragment())
-                .commit()
+        if (android.os.Build.VERSION.SDK_INT > 23) {
+            if (isInPictureInPictureMode) {
+                // Continue playback
+                //Toast.makeText(this, "onpause", Toast.LENGTH_LONG).show()
+//                supportFragmentManager
+//                    .beginTransaction()
+//                    .replace(android.R.id.content, PlaybackVideoFragment())
+//                    .commit()
 
-        } else {
+            } else {
 
+            }
         }
     }
 
@@ -119,7 +137,12 @@ class PlaybackActivity : FragmentActivity() {
                     View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 
         } else {
-            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 
         }
     }

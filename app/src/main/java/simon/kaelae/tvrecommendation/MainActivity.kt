@@ -8,11 +8,15 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemLongClickListener
+import android.widget.Button
+import android.widget.GridView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DataSnapshot
@@ -21,9 +25,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import simon.kaelae.tvrecommendation.recommendation.DefaultChannelRecommendationJobService
 import simon.kaelae.tvrecommendation.recommendation.PROGRAM_QUERY
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemLongClickListener
-import kotlinx.android.synthetic.main.phone_layout.*
 
 
 class MainActivity : Activity() {
@@ -67,7 +68,7 @@ class MainActivity : Activity() {
                 //.makeText(this@MainActivity,sharedPreference.getString("name", "")!!.split(",")[1],Toast.LENGTH_SHORT).show()
                 //Toast.makeText(this@MainActivity,sharedPreference.getString("name", "")!!.split(",").size.toString(),Toast.LENGTH_SHORT).show()
 
-                for (i in  0 until sharedPreference.getString("name", "")!!.split(",").size) {
+                for (i in 0 until sharedPreference.getString("name", "")!!.split(",").size) {
                     title.add(sharedPreference.getString("name", "")!!.split(",")[i])
                 }
                 title.removeAt(9)
@@ -85,15 +86,15 @@ class MainActivity : Activity() {
                     openURL.data = fblink
                     startActivity(openURL)
                 }
-                if (position>8) {
+                if (position > 8) {
 
                     val intent = Intent(this, PlaybackActivity::class.java)
                     val movie = Movie(
                         id.toInt(),
-                        title = sharedPreference.getString("name", "")!!.split(",")[position-8],
+                        title = sharedPreference.getString("name", "")!!.split(",")[position - 8],
                         description = "",
                         cardImageUrl = "",
-                        videoUrl = sharedPreference.getString("url", "")!!.split(",")[position-8],
+                        videoUrl = sharedPreference.getString("url", "")!!.split(",")[position - 8],
                         func = ""
                     )
                     intent.putExtra(DetailsActivity.MOVIE, movie)
@@ -108,20 +109,20 @@ class MainActivity : Activity() {
 
             gridview.setOnItemLongClickListener(OnItemLongClickListener { arg0, arg1, position, arg3 ->
 
-                if(position>8){
+                if (position > 8) {
                     //Toast.makeText(this@MainActivity,sharedPreference.getString("url", "")!!.split(",")[position-8],Toast.LENGTH_SHORT).show()
 
-                    lateinit var dialog:AlertDialog
+                    lateinit var dialog: AlertDialog
                     val builder = AlertDialog.Builder(this)
                     builder.setTitle("刪除此自定項目?")
 
-                    val dialogClickListener = DialogInterface.OnClickListener{_,which ->
-                        when(which){
-                            DialogInterface.BUTTON_POSITIVE -> removeSharePreference(position-8)
+                    val dialogClickListener = DialogInterface.OnClickListener { _, which ->
+                        when (which) {
+                            DialogInterface.BUTTON_POSITIVE -> removeSharePreference(position - 8)
                         }
                     }
-                    builder.setPositiveButton("YES",dialogClickListener)
-                    builder.setNegativeButton("CANCEL",dialogClickListener)
+                    builder.setPositiveButton("YES", dialogClickListener)
+                    builder.setNegativeButton("CANCEL", dialogClickListener)
                     dialog = builder.create()
                     dialog.show()
                 }
@@ -137,13 +138,14 @@ class MainActivity : Activity() {
             val notice = findViewById<TextView>(R.id.notice)
             database.getReference("notice").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if(dataSnapshot.getValue(String::class.java) ==""){
+                    if (dataSnapshot.getValue(String::class.java) == "") {
                         notice.visibility = GONE
                     } else {
                         notice.text = dataSnapshot.getValue(String::class.java)
                         notice.visibility = VISIBLE
                     }
                 }
+
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
@@ -152,6 +154,7 @@ class MainActivity : Activity() {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     fblink = Uri.parse(dataSnapshot.getValue(String::class.java))
                 }
+
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
@@ -160,9 +163,10 @@ class MainActivity : Activity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 Cloud_ver = dataSnapshot.getValue(Int::class.java) as Int
                 if (Local_ver < Cloud_ver) {
-                    Toast.makeText(this@MainActivity,"發現更新，請到設定下載",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "發現更新，請到設定下載", Toast.LENGTH_SHORT).show()
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
             }
         })
@@ -177,6 +181,8 @@ class MainActivity : Activity() {
         try {
             DefaultChannelRecommendationJobService.startJob(this)
         } catch (e: Exception) {
+        } catch (e: Error) {
+            //handle carefully
         }
         if (intent != null && intent.data != null) {
             showMovie()
@@ -189,7 +195,7 @@ class MainActivity : Activity() {
         val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
         val id: String? = intent.data?.getQueryParameter(PROGRAM_QUERY)
         id ?: return
-        if(id.toInt()<8) {
+        if (id.toInt() < 8) {
             //Toast.makeText(this@MainActivity,id.toInt().toString(),Toast.LENGTH_SHORT).show()
             val movie = MovieList.list.find { it.id == id.toInt() }
             val intent = Intent(this, PlaybackActivity::class.java)
@@ -201,10 +207,10 @@ class MainActivity : Activity() {
             val intent = Intent(this, PlaybackActivity::class.java)
             val movie = Movie(
                 id.toInt(),
-                title = sharedPreference.getString("name", "")!!.split(",")[id.toInt()-7],
+                title = sharedPreference.getString("name", "")!!.split(",")[id.toInt() - 7],
                 description = "",
                 cardImageUrl = "",
-                videoUrl = sharedPreference.getString("url", "")!!.split(",")[id.toInt()-7],
+                videoUrl = sharedPreference.getString("url", "")!!.split(",")[id.toInt() - 7],
                 func = ""
             )
             intent.putExtra(DetailsActivity.MOVIE, movie)
@@ -216,15 +222,15 @@ class MainActivity : Activity() {
         return packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
     }
 
-    fun removeSharePreference(i: Int){
+    fun removeSharePreference(i: Int) {
         val sharedPreference = getSharedPreferences("layout", Context.MODE_PRIVATE)
         var editor = sharedPreference.edit()
-        val original_name:MutableList<String> = sharedPreference.getString("name","")?.split(",")!!.toMutableList()
+        val original_name: MutableList<String> = sharedPreference.getString("name", "")?.split(",")!!.toMutableList()
         original_name.removeAt(i)
-        val original_name_string = original_name.joinToString (separator = ",")
-        val original_url:MutableList<String> = sharedPreference.getString("url","")?.split(",")!!.toMutableList()
+        val original_name_string = original_name.joinToString(separator = ",")
+        val original_url: MutableList<String> = sharedPreference.getString("url", "")?.split(",")!!.toMutableList()
         original_url.removeAt(i)
-        val original_url_string = original_url.joinToString (separator = ",")
+        val original_url_string = original_url.joinToString(separator = ",")
         editor.putString("name", original_name_string)
         editor.putString("url", original_url_string)
         editor.apply()

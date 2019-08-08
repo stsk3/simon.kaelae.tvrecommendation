@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.SurfaceView
 import android.view.View
 import android.widget.Toast
 import androidx.leanback.app.VideoSupportFragment
@@ -21,6 +22,9 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 class PlaybackVideoFragment : VideoSupportFragment() {
+
+    var mVideoSurface: SurfaceView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -34,7 +38,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
 
     override fun onPause() {
         super.onPause()
-        mTransportControlGlue.pause()
+        //mTransportControlGlue.pause()
     }
 
     private fun setUpPlayer(){
@@ -263,6 +267,22 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         channelSwitch(lastDirection, false)
     }
 
+    override fun onVideoSizeChanged(width: Int, height: Int) {
+        val screenWidth = view!!.width
+        val screenHeight = view!!.height
+
+        val p = mVideoSurface?.layoutParams
+        if (screenWidth * height > width * screenHeight) {
+            // fit in screen height
+            p?.height = screenHeight
+            p?.width = screenHeight * width / height
+        } else {
+            // fit in screen width
+            p?.width = screenWidth
+            p?.height = screenWidth * height / width
+        }
+        mVideoSurface?.layoutParams = p
+    }
     companion object {
         private val SDK_VER = android.os.Build.VERSION.SDK_INT
         var currentVideoID = -1

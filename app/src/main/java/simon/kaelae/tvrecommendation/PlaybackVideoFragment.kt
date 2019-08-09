@@ -1,57 +1,77 @@
 package simon.kaelae.tvrecommendation
 
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.view.SurfaceView
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.leanback.app.VideoSupportFragment
-import androidx.leanback.app.VideoSupportFragmentGlueHost
-import androidx.leanback.media.MediaPlayerAdapter
-import androidx.leanback.media.PlaybackTransportControlGlue
-import androidx.leanback.widget.PlaybackControlsRow
+import androidx.fragment.app.Fragment
 import com.android.volley.*
 import com.android.volley.toolbox.*
+import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import kotlinx.android.synthetic.main.activity_exo.view.*
 import org.json.JSONArray
 import org.json.JSONObject
 
-class PlaybackVideoFragment : VideoSupportFragment() {
+class PlaybackVideoFragment : Fragment() {
 
-    var mVideoSurface: SurfaceView? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val view: View = inflater.inflate(R.layout.activity_exo, container,
+            false)
 
         val (id, title, _, _, videoUrl, func) = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
 
-        setUpPlayer()
+        setUpPlayer(view)
         setUpNetwork()
 
         prepareVideo(id, title, videoUrl, func)
+
+        return view
     }
 
-    override fun onPause() {
-        super.onPause()
-        //mTransportControlGlue.pause()
+
+    override fun onStop() {
+        super.onStop()
+        player.release()
     }
 
-    private fun setUpPlayer(){
-        playerAdapter = MediaPlayerAdapter(activity)
-        playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE)
-        mTransportControlGlue = PlaybackTransportControlGlue(activity, playerAdapter)
+    override fun onDestroy() {
+        super.onDestroy()
+        player.release()
+    }
 
-        val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
-        mTransportControlGlue.host = glueHost
+    private fun setUpPlayer(view: View){
+        // setup track selector
+        val bandwithMeter = DefaultBandwidthMeter()
+        val videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwithMeter)
+        val trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
 
-        mTransportControlGlue.isControlsOverlayAutoHideEnabled = true
-        hideControlsOverlay(false)
-        mTransportControlGlue.isSeekEnabled = false
+        // create player
+        player = ExoPlayerFactory.newSimpleInstance(activity, trackSelector)
+        player.playWhenReady = true
+        playerView = view.player_view
+        playerView.useController = true
+        playerView.requestFocus()
+        playerView.player = player
+        playerView.hideController()
+
+        dataSourceFactory = DefaultDataSourceFactory(activity, "exoplayer", bandwithMeter)
+        hlsMediaSourceFactory = HlsMediaSource.Factory(dataSourceFactory)
 
         toast = Toast.makeText(context, "", Toast.LENGTH_LONG)
     }
@@ -118,22 +138,22 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         }catch (e: java.lang.Exception){}
         val sharedPreference = activity?.getSharedPreferences("layout", Context.MODE_PRIVATE)
         if (sharedPreference?.getString("player", "originalplayer") == "originalplayer") {
-            mTransportControlGlue.title = title
-            playerAdapter.setDataSource(Uri.parse(handleUrl(videoUrl)))
-            mTransportControlGlue.playWhenPrepared()
+            val mediaUri = Uri.parse(videoUrl)
+            val mediaSource = hlsMediaSourceFactory.createMediaSource(mediaUri)
+            player.prepare(mediaSource)
         }else{
 
 
         try {
-            val playIntent: Intent = Uri.parse(handleUrl(videoUrl)).let { uri ->
+            val playIntent: Intent = Uri.parse(videoUrl).let { uri ->
                 Intent(Intent.ACTION_VIEW, uri)
             }
             startActivity(playIntent)
         }catch (e: java.lang.Exception){
             //Toast.makeText(context?.applicationContext,"沒有播放器，建議安裝Mx Player，改用內置播放器",Toast.LENGTH_SHORT).show()
-            mTransportControlGlue.title = title
-            playerAdapter.setDataSource(Uri.parse(handleUrl(videoUrl)))
-            mTransportControlGlue.playWhenPrepared()
+            val mediaUri = Uri.parse(videoUrl)
+            val mediaSource = hlsMediaSourceFactory.createMediaSource(mediaUri)
+            player.prepare(mediaSource)
         }}
     }
 
@@ -146,14 +166,14 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             val params = JSONObject()
 
             if(ch.equals("viutv99")){
-                url = handleUrl("https://api.viu.now.com/p8/2/getLiveURL")
+                url = "https://api.viu.now.com/p8/2/getLiveURL"
 
                 params.put("channelno", "099")
 
                 params.put("deviceId", "AndroidTV")
                 params.put("deviceType", "5")
             }else{
-                url = handleUrl("https://hkt-mobile-api.nowtv.now.com/09/1/getLiveURL")
+                url = "https://hkt-mobile-api.nowtv.now.com/09/1/getLiveURL"
 
                 if(ch.equals("nowtv332")){
                     params.put("channelno", "332")
@@ -189,7 +209,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
 
             requestQueue.add(jsonObjectRequest)
         }else if(ch.equals("cabletv109") || ch.equals("cabletv110")){
-            url = handleUrl("https://mobileapp.i-cable.com/iCableMobile/API/api.php")
+            url = "https://mobileapp.i-cable.com/iCableMobile/API/api.php"
 
             val stringRequest = object: StringRequest(
                 Method.POST,
@@ -253,13 +273,6 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         }
     }
 
-    private fun handleUrl(url: String): String{
-        if(SDK_VER < 21){
-            return url.replace("https://", "http://")
-        }else{
-            return url
-        }
-    }
 
     private fun showPlaybackErrorMessage(title: String){
         toast.setText(title + " 暫時未能播放，請稍候再試。")
@@ -267,27 +280,13 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         channelSwitch(lastDirection, false)
     }
 
-    override fun onVideoSizeChanged(width: Int, height: Int) {
-        val screenWidth = view!!.width
-        val screenHeight = view!!.height
-
-        val p = mVideoSurface?.layoutParams
-        if (screenWidth * height > width * screenHeight) {
-            // fit in screen height
-            p?.height = screenHeight
-            p?.width = screenHeight * width / height
-        } else {
-            // fit in screen width
-            p?.width = screenWidth
-            p?.height = screenWidth * height / width
-        }
-        mVideoSurface?.layoutParams = p
-    }
     companion object {
-        private val SDK_VER = android.os.Build.VERSION.SDK_INT
+        private lateinit var player: SimpleExoPlayer
+        private lateinit var playerView: SimpleExoPlayerView
+        private lateinit var dataSourceFactory: DefaultDataSourceFactory
+        private lateinit var hlsMediaSourceFactory: HlsMediaSource.Factory
+
         var currentVideoID = -1
-        private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
-        private lateinit var playerAdapter: MediaPlayerAdapter
         private lateinit var requestQueue: RequestQueue
         private var lastDirection = "NEXT"
         private lateinit var toast: Toast
